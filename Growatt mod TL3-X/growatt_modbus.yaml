@@ -83,7 +83,7 @@ modbus_controller:
 #    scl: 18
 #    scan: true
 
-## Option for Relay  ***experimental***
+## Option for Relay
 ## Comment with # if not used.
 #switch:
 #  - platform: gpio
