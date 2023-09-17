@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v3
       - name: "Create secrets file"
         run: |
-          touch esphome/secrets.yaml
-          cat <<EOF > esphome/secrets.yaml
+          touch secrets.yaml
+          cat <<EOF > secrets.yaml
           wifi_ssid: TestWifi
           wifi_password: TestWifiSecret
           EOF
