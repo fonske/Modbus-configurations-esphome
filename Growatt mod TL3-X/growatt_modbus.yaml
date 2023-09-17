@@ -51,7 +51,7 @@ web_server:
 status_led:
   pin:
     number: 17
-    
+
 ### modbus ###
 uart:
   id: mod_bus
@@ -94,6 +94,7 @@ modbus_controller:
 #    id: relay
 #    internal: true
 #    icon: mdi:alarm-bell
+
 time:
 # synchronise time
   - platform: sntp
