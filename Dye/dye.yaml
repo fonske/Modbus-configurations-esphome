@@ -46,7 +46,12 @@ captive_portal:
 # Enable Web server.
 web_server:
   port: 80
-  
+
+# Enable Status LED.
+status_led:
+  pin:
+    number: 17
+      
 uart:
   id: mod_bus
   tx_pin: 16
@@ -63,8 +68,32 @@ modbus_controller:
     modbus_id: modbus1
     setup_priority: -10
     update_interval: 15sec
-  
+
+## Option for 2x I2C connectors
+## Comment with # if not used.
+#i2c:  
+#  - id: bus_a
+#    sda: 13
+#    scl: 14
+#    scan: true
+
+#  - id: bus_b
+#    sda: 10
+#    scl: 18
+#    scan: true
+
 switch:
+## Option for Relay
+## Comment with # if not used.
+#  - platform: gpio
+#    pin:
+#      number: 5
+#      inverted: false
+#    name: "Relay"
+#    id: relay
+#    internal: true
+#    icon: mdi:alarm-bell
+
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
@@ -420,6 +449,19 @@ number:
     value_type: U_WORD
 
 sensor:
+## Option for DHT11 or DHT22 connect on last 3 terminals -/S(ignal)/+
+## Comment with # if not used.
+#  - platform: dht
+#    model: DHT22
+#    pin: 8
+#    temperature:
+#      name: temperature
+#      id: dye_temperature
+#    humidity:
+#      name: humidity
+#      id: dye_humidity
+#    update_interval: 15s
+
   - platform: modbus_controller #sun12k-køleplade temeratur
     modbus_controller_id: ${modbus_controller_id}
     name: "sun12k-Heat sink temperature"
