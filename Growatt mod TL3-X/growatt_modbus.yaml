@@ -47,6 +47,11 @@ captive_portal:
 web_server:
   port: 80
 
+# Enable Status LED.
+status_led:
+  pin:
+    number: 17
+    
 ### modbus ###
 uart:
   id: mod_bus
@@ -65,6 +70,30 @@ modbus_controller:
     address: 0x1
     update_interval: 15s
 
+## Option for 2x I2C connectors
+## Comment with # if not used.
+#i2c:  
+#  - id: bus_a
+#    sda: 13
+#    scl: 14
+#    scan: true
+
+#  - id: bus_b
+#    sda: 10
+#    scl: 18
+#    scan: true
+
+## Option for Relay  ***experimental***
+## Comment with # if not used.
+#switch:
+#  - platform: gpio
+#    pin:
+#      number: 5
+#      inverted: false
+#    name: "Relay"
+#    id: relay
+#    internal: true
+#    icon: mdi:alarm-bell
 time:
 # synchronise time
   - platform: sntp
@@ -72,6 +101,19 @@ time:
     timezone: "Europe/Amsterdam"
 
 sensor:
+## Option for DHT11 or DHT22 connect on last 3 terminals -/S(ignal)/+
+## Comment with # if not used.
+#  - platform: dht
+#    model: DHT22
+#    pin: 8
+#    temperature:
+#      name: temperature
+#      id: growatt_temperature
+#    humidity:
+#      name: humidity
+#      id: growatt_humidity
+#    update_interval: 15s
+
   - platform: modbus_controller
     modbus_controller_id: ${name}
     id: pv1voltage
