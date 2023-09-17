@@ -19,6 +19,14 @@ esp32:
 
 # Enable logging
 logger:
+  logs:
+    modbus_controller.sensor: INFO
+    modbus_controller.output: INFO
+    modbus.number: INFO
+    esp32.preferences: INFO
+    sensor: INFO
+    text_sensor: INFO
+    number: INFO 
 
 # Enable Home Assistant API
 api:
