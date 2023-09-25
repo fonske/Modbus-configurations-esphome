@@ -24,4 +24,4 @@ jobs:
         uses: esphome/build-action@v1
         id: esphome-build
         with:
-          yaml_file: mitsubishi_procon/esp-mitsubishi.yaml
+          yaml_file: mitsubishi_procon/mh-et-live-mitsubishi_v1/mh-et-live-mitsubishi.yaml
