@@ -21,14 +21,14 @@ esp32:
 # Enable logging
 logger:
   logs:
-    modbus_controller.sensor: DEBUG  #set all to INFO for lower log level
-    modbus_controller.output: DEBUG
-    modbus.number: DEBUG
-    esp32.preferences: DEBUG
-    sensor: DEBUG
-    text_sensor: DEBUG
+    modbus_controller.sensor: INFO  #set all to DEBUG for higher log level
+    modbus_controller.output: INFO
+    modbus.number: INFO
+    esp32.preferences: INFO
+    sensor: INFO
+    text_sensor: INFO
 #    dallas.sensor: WARN #disable if dallas is not used
-    number: DEBUG  
+    number: INFO  
 
 # Enable Home Assistant API
 api:
