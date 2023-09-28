@@ -87,7 +87,7 @@ uart:
   stop_bits: 1
   parity: none
 
-### modbus ### on V1
+### modbus ### on V2
 #uart:
 #  id: mod_bus
 #  tx_pin: 16
