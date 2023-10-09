@@ -219,14 +219,14 @@ sensor:
       - sliding_window_moving_average:
           window_size: 60
           send_every: 30
-    on_value:
-      then:
-        - lambda: !lambda |-
-            static float prev_oat = -100.0;
-            if (abs(round(x) - round(prev_oat)) > 0.1) {
-              fsm.update_stooklijn();
-              prev_oat = x;
-            }
+ #   on_value:
+ #     then:
+ #       - lambda: !lambda |-
+ #           static float prev_oat = -100.0;
+ #           if (abs(round(x) - round(prev_oat)) > 0.1) {
+ #             fsm.update_stooklijn();
+ #             prev_oat = x;
+ #           }
 
   - platform: modbus_controller
     modbus_controller_id: ${name}
