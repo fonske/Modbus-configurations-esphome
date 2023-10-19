@@ -7,10 +7,10 @@ substitutions:
 # Currently supported languages are en, nl. 
 packages:
   remote_package:
-    url: https://github.com/fonske/Modbus-configurations-esphome/mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/
+    url: https://github.com/fonske/Modbus-configurations-esphome/mitsubishi_procon
     ref: main
     files: 
-      - .procon-labels-en.yaml
+      - /lilygo-t7-s3-mitsubishi_V2/.procon-labels-en.yaml
       #- .procon-labels-nl.yaml
 
 esphome:
@@ -483,7 +483,7 @@ sensor:
     ## Last Measured Total Energy Consumption – kWh (FC4: 162, MA: 30163)
   - platform: modbus_controller
     modbus_controller_id: ${device}
-    id: last_measured_total_energy_consumtion
+    id: last_measured_total_energy_consumption
     name: ${device} Last measured total energy consumption
     address: 162
     unit_of_measurement: "kWh"
