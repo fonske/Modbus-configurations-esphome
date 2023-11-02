@@ -10,8 +10,8 @@ packages:
     url: https://github.com/fonske/Modbus-configurations-esphome/mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2
     ref: main
     files: 
-      - esphome/.procon-labels-en.yaml
-#      #- esphome/.procon-labels-nl.yaml
+      - esphome/labels/.procon-labels-en.yaml
+#      #- esphome/labels/.procon-labels-nl.yaml
 
 esphome:
   name: ${device}
