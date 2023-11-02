@@ -1,59 +1,59 @@
 substitutions:
-  brink_filter_status: Filter status
-  brink_bypass_status: Bypass status
-  brink_co2_status: CO2 sensor status
-  brink_temp_to_inside: Binnen uitblaas temperatuur
-  brink_humidity_to_inside: Binnen uitblaas luchtvochtigheid
-  brink_dewpoint_to_inside: Binnen dauwpunt
-  brink_external_humidity_sensor: Vochtsensor
-  brink_external_co2_sensor: CO2 sensor
-  brink_temp_to_outside: Buiten uitblaas temperatuur
-  brink_humidity_to_outside: Buiten uitblaas luchtvochtigheid
-  brink_temp_from_outside: Buiten aanzuig temperatuur
-  brink_supply_pressure: Druk inblaas
-  brink_exhaust_pressure: Druk uitblaas
-  brink_setpoint_inlet_volume: Inlaatluchtvolume ingesteld
-  brink_current_inlet_volume: Huidig inlaat luchtvolume
-  brink_setpoint_outlet_volume: Uitlaatluchtvolume ingesteld
-  brink_current_outlet_volume: Huidig uitlaat luchtvolume
-  brink_frost_heater_power: Bevriezing heaterpower
-  brink_frost_fan_reduction: Bevriezing fan reductie
-  brink_current_filter_hours: Filter uren
-  brink_current_filter_days: Filter dagen
-  brink_exchange_filter_in: Filter wissel in
-  brink_filter_m3_h: Filter m3/h
-  brink_device_type: Model flair
-  brink_frost_status: Bevriezing status
-  brink_bypass_boost_switch_position: Bypass Boost fan stand
-  brink_modbus_flow_step: Ventilatie stand
-  brink_modbus_flow_rate: Modbus flow waarde
-  brink_status: Status
-  brink_rht_sensor: Vocht sensor
-  brink_co2_sensor: CO2 sensor
-  brink_standby_switch: Standby schakelaar
-  brink_imbalance_intake: Fan onbalans inlaat
-  brink_bypass_from_dwelling: Bypass temp uit woning
-  brink_bypass_from_outside: Bypass temp van buiten
-  brink_bypass_hysteresis: Bypass hysteresis
-  brink_frost_control_temperature: Bevriezing controle temp
-  brink_frost_minimum_inlet_temperature: Bevriezing minimum inlaat temp
-  brink_imbalance_exhaust: Fan onbalans uitlaat
-  brink_filter_change_days: Dagen filter wissel
-  brink_filter_reset_on: Filter reset op
-  brink_co2_from_inside: Binnen aanzuig CO2
-  brink_humidity_from_inside: Binnen aanzuig luchtvochtigheid
-  brink_temp_from_inside: Binnen aanzuig temperatuur
-  brink_pressure_from_inside: Binnen aanzuig atm. druk
-  brink_performance: Rendement
+  procon_version: MelcoBEMS MINI firmware versie
+  heat_pump_frequency_master: Warmtepomp frequentie – Master  
+  temperature_setpoint_zone_1: Ingestelde temperatuur
+  flow_temperature_setpoint_zone_1: Ingestelde flow temperatuur
+  legionella_temperature_setpoint: Ingestelde Legionella temperatuur
+  DHW_temperature_drop: SWW temperatuur hysterese
+  room_temperature_zone_1: Kamer temperatuur
+  refrigerant_liquid_temperature: Koelmiddelvloeistof temperatuur
+  outdoor_ambient_temperature: Buiten temperatuur
+  flow_temperature: Flow temperatuur
+  return_temperature: Retour temperatuur
+  tank_water_temperature: SWW boiler temperatuur
+  return_temperature_setpoint_zone_1: Ingestelde retour temperature
+  boiler_flow_temperature: Boiler flow temperatuur
+  boiler_return_temperature: Boiler retour temperatuur
+  heat_pump_run_time: Warmtepomp runtime
+  energy_used_heating: Energie gebruikt verwarmen
+  energy_used_cooling: Energie gebruikt koelen
+  energy_used_dhw: Energie gebruikt SWW
+  last_measured_total_energy_consumption: Laatst gemeten totale energie verbruikt
+  energy_produced_heating: Energy geproduceerd verwarmen
+  energy_produced_cooling: Energy geproduceerd koelen
+  energy_produced_dhw: Energy geproduceerd SWW
+  cop_heating: COP verwarmen
+  cop_cooling: COP koelen
+  cop_dhw: COP SWW
+  last_measured_total_energy_produced: Laatst gemeten totale energie geproduceerd
+  flow_rate: Flow
+  consumed_electric_power: Verbruikt elektrisch vermogen
+  produced_power: Geproduceerd thermisch vermogen
+  esp_home_version: Esphome Versie
+  fault_code: Fout code
+  system_type_detected: Systeem type gedetecteerd
+  defrost: Ontdooien
+  residual_heat_removal: Residual heat removal
+  refrigerant_error_info: Koelmiddel fout info
+  seven_segment_display_error_code_digit_1: 7-Segment display fout code digit 1
+  seven_segment_display_error_code_digit_2: 7-Segment display fout code digit 2
+  heat_source_status: Status verwarmingsbron
+  model_profile_1: Model Profiel 1
+  operating_mode: Werkings mode
+  set_tank_water_temperature: Ingestelde boiler doel temperatuur
+  hc_thermostat_target_temperature_zone_1: Verw/Koelen doel temperatuur
+  thermostat_target_temperature_zone_1: Thermostaat doel temperatuur
+  relay: Relais
+  operating_mode_dhw: DHW eco modus
+  force_dhw: Forceer SWW
+  set_holiday: Vakantie modus
+  cooling_on_prohibit_zone_1: Koelen verboden
+  system_on_off: Systeem aan/uit
+  ac_mode_zone_1: A/C mode
+  hc_control_type: HC controle type
+
   auto: Auto
-  initialize: Initialisatie
+  initialize: Initialiseren
   unknown: Onbekend
-  opening: Openend
-  closing: Sluitend
-  open: Open
-  closed: Dicht
-  error: Storing
-  hours: Uur
+  hours: uur
   days: dagen
-  not_dirty: Niet vervuild
-  dirty: Vervuild
