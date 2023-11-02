@@ -5,12 +5,12 @@ substitutions:
 
 # In order to use other language, fix include file name below:
 # Currently supported languages are en, nl. 
-#packages:
-#  remote_package:
-#    url: https://github.com/fonske/Modbus-configurations-esphome/mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/
-#    ref: main
-#    files: 
-#      - esphome/.procon-labels-en.yaml
+packages:
+  remote_package:
+    url: https://github.com/fonske/Modbus-configurations-esphome/mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2
+    ref: main
+    files: 
+      - esphome/.procon-labels-en.yaml
 #      #- esphome/.procon-labels-nl.yaml
 
 esphome:
