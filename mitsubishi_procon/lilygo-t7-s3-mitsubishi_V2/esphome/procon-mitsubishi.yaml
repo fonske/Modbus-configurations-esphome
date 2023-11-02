@@ -7,7 +7,7 @@ substitutions:
 # Currently supported languages are en, nl. 
 packages:
   remote_package:
-    url: https://github.com/fonske/Modbus-configurations-esphome/mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2
+    url: https://github.com/fonske/Modbus-configurations-esphome/tree/main/mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2
     ref: main
     files: 
       - esphome/labels/.procon-labels-en.yaml
