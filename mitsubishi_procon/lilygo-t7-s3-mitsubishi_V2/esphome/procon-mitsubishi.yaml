@@ -139,7 +139,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: procon_version
-    name: ${device} MelcoBEMS MINI firmware version
+    name: ${procon_version}
     icon: mdi:memory
     address: 3
     register_type: read
@@ -151,7 +151,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: heat_pump_frequency_master
-    name: ${device} Heat pump frequency – Master
+    name: ${heat_pump_frequency_master}
     icon: mdi:sine-wave
     address: 32
     device_class: frequency
@@ -164,7 +164,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: temperature_setpoint_zone_1
-    name: ${device} Temperature setpoint
+    name: ${temperature_setpoint_zone_1}
     icon: mdi:home-thermometer
     address: 40
     device_class: temperature
@@ -179,7 +179,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: flow_temperature_setpoint_zone_1
-    name: ${device} Flow temperature setpoint
+    name: ${flow_temperature_setpoint_zone_1}
     icon: mdi:thermometer-auto
     address: 44
     device_class: temperature
@@ -194,7 +194,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: legionella_temperature_setpoint
-    name: ${device} Legionella temperature setpoint
+    name: ${legionella_temperature_setpoint}
     icon: mdi:bacteria-outline
     address: 48
     device_class: temperature
@@ -209,7 +209,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: DHW_temperature_drop
-    name: ${device} DHW temperature drop
+    name: ${DHW_temperature_drop}
     icon: mdi:thermometer-chevron-down
     address: 50
     device_class: temperature
@@ -224,7 +224,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: room_temperature_zone_1
-    name: ${device} Room temperature
+    name: ${room_temperature_zone_1}
     icon: mdi:home-thermometer
     address: 52
     device_class: temperature
@@ -239,7 +239,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: refrigerant_liquid_temperature
-    name: ${device} Refrigerant liquid temperature
+    name: ${refrigerant_liquid_temperature}
     icon: mdi:snowflake-thermometer
     address: 56
     device_class: temperature
@@ -254,7 +254,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: outdoor_ambient_temperature
-    name: ${device} Outdoor ambient temperature
+    name: ${outdoor_ambient_temperature}
     icon: mdi:thermometer
     address: 58
     device_class: temperature
@@ -269,7 +269,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: flow_temperature
-    name: ${device} Flow temperature
+    name: ${flow_temperature}
     icon: mdi:thermometer-auto
     address: 60
     device_class: temperature
@@ -284,7 +284,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: return_temperature
-    name: ${device} Return temperature
+    name: ${return_temperature}
     icon: mdi:thermometer
     address: 62
     device_class: temperature
@@ -299,7 +299,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: tank_water_temperature
-    name: ${device} Tank water temperature
+    name: ${tank_water_temperature}
     icon: mdi:water-thermometer
     address: 64
     device_class: temperature
@@ -314,7 +314,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: return_temperature_setpoint_zone_1
-    name: ${device} Return temperature setpoint
+    name: ${return_temperature_setpoint_zone_1}
     icon: mdi:thermometer
     address: 68
     device_class: temperature
@@ -329,7 +329,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: boiler_flow_temperature
-    name: ${device} Boiler flow temperature
+    name: ${boiler_flow_temperature}
     icon: mdi:thermometer
     address: 74
     device_class: temperature
@@ -344,7 +344,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: boiler_return_temperature
-    name: ${device} Boiler return temperature
+    name: ${boiler_return_temperature}
     icon: mdi:thermometer
     address: 76
     device_class: temperature
@@ -378,7 +378,7 @@ sensor:
     ## Heat pump run time (template)
   - platform: template
     id: heat_pump_run_time
-    name: ${device} Heat pump run time
+    name: ${heat_pump_run_time}
     icon: mdi:wrench-clock
     device_class: duration
     unit_of_measurement: "hrs"
@@ -408,7 +408,7 @@ sensor:
     ## Energy used heating (template)
   - platform: template
     id: energy_used_heating
-    name: ${device} Energy used heating
+    name: ${energy_used_heating}
     icon: mdi:heat-wave
     device_class: energy
     state_class: total_increasing
@@ -439,7 +439,7 @@ sensor:
     ## Energy used cooling (template)
   - platform: template
     id: energy_used_cooling
-    name: ${device} Energy used cooling
+    name: ${energy_used_cooling}
     icon: mdi:snowflake
     device_class: energy
     state_class: total_increasing
@@ -470,7 +470,7 @@ sensor:
     ## Energy used DHW (template)
   - platform: template
     id: energy_used_dhw
-    name: ${device} Energy used DHW
+    name: ${energy_used_dhw}
     icon: mdi:water
     device_class: energy
     state_class: total_increasing
@@ -484,7 +484,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: last_measured_total_energy_consumption
-    name: ${device} Last measured total energy consumption
+    name: ${last_measured_total_energy_consumption}
     address: 162
     unit_of_measurement: "kWh"
     device_class: energy
@@ -513,7 +513,7 @@ sensor:
     ## Energy produced heating (template)
   - platform: template
     id: energy_produced_heating
-    name: ${device} Energy produced heating
+    name: ${energy_produced_heating}
     icon: mdi:heat-wave
     device_class: energy
     state_class: total_increasing
@@ -544,7 +544,7 @@ sensor:
     ## Energy produced cooling (template)
   - platform: template
     id: energy_produced_cooling
-    name: ${device} Energy produced cooling
+    name: ${energy_produced_cooling}
     icon: mdi:snowflake
     device_class: energy
     state_class: total_increasing
@@ -575,7 +575,7 @@ sensor:
     ## Energy produced DHW (template)
   - platform: template
     id: energy_produced_dhw
-    name: ${device} Energy produced DHW
+    name: ${energy_produced_dhw}
     icon: mdi:water
     device_class: energy
     state_class: total_increasing
@@ -588,7 +588,7 @@ sensor:
     ## COP heating (template)
   - platform: template
     id: cop_heating
-    name: ${device} COP heating
+    name: ${cop_heating}
     icon: mdi:slash-forward-box
     accuracy_decimals: 2
     lambda: |-
@@ -598,7 +598,7 @@ sensor:
     ## COP Cooling (template)
   - platform: template
     id: cop_cooling
-    name: ${device} COP cooling
+    name: ${cop_cooling}
     icon: mdi:slash-forward-box
     accuracy_decimals: 2
     lambda: |-
@@ -608,7 +608,7 @@ sensor:
     ## COP DHW (template)
   - platform: template
     id: cop_dhw
-    name: ${device} COP DHW
+    name: ${cop_dhw}
     icon: mdi:slash-forward-box
     accuracy_decimals: 2
     lambda: |-
@@ -619,7 +619,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: last_measured_total_energy_produced
-    name: ${device} Last measured total energy produced
+    name: ${last_measured_total_energy_produced}
     address: 172
     unit_of_measurement: "kWh"
     device_class: energy
@@ -631,7 +631,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: flow_rate
-    name: ${device} Flow rate
+    name: ${flow_rate}
     icon: mdi:arrow-right-bold-circle
     address: 173
     unit_of_measurement: "l/min"
@@ -667,7 +667,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: consumed_electric_power
-    name: ${device} Consumed electric power
+    name: ${consumed_electric_power}
     address: 227
     icon: mdi:lightning-bolt
     device_class: energy
@@ -679,7 +679,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: produced_power
-    name: ${device} Produced power
+    name: ${produced_power}
     address: 228
     icon: mdi:lightning-bolt
     device_class: energy
@@ -690,14 +690,14 @@ sensor:
 text_sensor:  
   # Expose ESPHome version as sensor.
   - platform: version
-    name: ${device} Esphome Versie
+    name: ${esp_home_version}
     hide_timestamp: true
 
     ## Fault Code (decimal) (FC4: 8, MA: 30009)
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: fault_code
-    name: ${device} Fault code
+    name: ${fault_code}
     icon: mdi:alert-circle
     address: 8
     register_type: read
@@ -716,7 +716,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: system_type_detected
-    name: ${device} System type detected
+    name: ${system_type_detected}
     icon: mdi:hvac
     address: 9
     register_type: read
@@ -736,7 +736,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: defrost
-    name: ${device} Defrost
+    name: ${defrost}
     icon: mdi:snowflake-melt
     address: 26
     register_type: read
@@ -757,7 +757,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: residual_heat_removal
-    name: ${device} Residual heat removal
+    name: ${residual_heat_removal}
     icon: mdi:car-defrost-rear
     address: 27
     register_type: read
@@ -776,7 +776,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: refrigerant_error_info
-    name: ${device} Refrigerant error info
+    name: ${refrigerant_error_info}
     entity_category: diagnostic
     icon: mdi:alert-circle
     address: 28
@@ -797,7 +797,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: seven_segment_display_error_code_digit_1
-    name: ${device} 7-Segment display error code digit 1
+    name: ${seven_segment_display_error_code_digit_1}
     icon: mdi:alert-circle
     entity_category: diagnostic
     address: 29
@@ -822,7 +822,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: seven_segment_display_error_code_digit_2
-    name: ${device} 7-Segment display error code digit 2
+    name: ${seven_segment_display_error_code_digit_2}
     icon: mdi:alert-circle
     entity_category: diagnostic
     address: 30
@@ -860,7 +860,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: heat_source_status
-    name: ${device} Heat source status
+    name: ${heat_source_status}
     icon: mdi:heating-coil
     address: 39
     register_type: read
@@ -881,7 +881,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: model_profile_1
-    name: ${device} Model Profile 1
+    name: ${model_profile_1}
     icon: mdi:hvac
     entity_category: diagnostic
     address: 151
@@ -913,7 +913,7 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: operating_mode
-    name: ${device} Operating mode
+    name: ${operating_mode}
     icon: mdi:message-question-outline
     address: 26
     register_type: holding
@@ -939,7 +939,7 @@ number:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: set_tank_water_temperature
-    name: ${device} Set tank water temperature
+    name: ${set_tank_water_temperature}
     device_class: temperature
     icon: mdi:water-thermometer-outline
     address: 30
@@ -956,7 +956,7 @@ number:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: hc_thermostat_target_temperature_zone_1
-    name: ${device} H/C thermostat target temperature
+    name: ${hc_thermostat_target_temperature_zone_1}
     device_class: temperature
     icon: mdi:home-thermometer
     address: 32
@@ -973,7 +973,7 @@ number:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: thermostat_target_temperature_zone_1
-    name: ${device} Thermostat target temperature
+    name: ${thermostat_target_temperature_zone_1}
     device_class: temperature
     icon: mdi:home-thermometer
     address: 54
@@ -994,7 +994,7 @@ switch:
     pin:
       number: 5
       inverted: false
-    name: Relay
+    name: ${relay}
     id: relay
     icon: mdi:alarm-bell
 
@@ -1002,7 +1002,7 @@ switch:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: operating_mode_dhw
-    name: ${device} DHW eco mode
+    name: ${operating_mode_dhw}
     register_type: holding
     icon: mdi:sprout
     address: 27
@@ -1013,7 +1013,7 @@ switch:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: force_dhw
-    name: ${device} Set force DHW
+    name: ${force_dhw}
     register_type: holding
     icon: mdi:fire-alert
     address: 37
@@ -1023,7 +1023,7 @@ switch:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: set_holiday
-    name: ${device} Set holiday mode
+    name: ${set_holiday}
     register_type: holding
     icon: mdi:briefcase
     address: 38
@@ -1033,7 +1033,7 @@ switch:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: cooling_on_prohibit_zone_1
-    name: ${device} Cooling on prohibit
+    name: ${cooling_on_prohibit_zone_1}
     register_type: holding
     icon: mdi:block-helper
     address: 41
@@ -1044,7 +1044,7 @@ switch:
     ## System ON/OFF (FC1: 1, MA: 00002)
   - platform: modbus_controller
     modbus_controller_id: ${device}
-    name: ${device} System on/off
+    name: ${system_on_off}
     register_type: coil
     address: 1
     bitmask: 0
@@ -1055,7 +1055,7 @@ select:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: ac_mode_zone_1
-    name: ${device} A/C mode
+    name: ${ac_mode_zone_1}
     address: 28
     optionsmap:
       "Heating room": 0
@@ -1071,7 +1071,7 @@ select:
   - platform: modbus_controller
     modbus_controller_id: ${device}
     id: hc_control_type
-    name: ${device} HC control type
+    name: ${hc_control_type}
     address: 58
     optionsmap:
       "Heating": 0
