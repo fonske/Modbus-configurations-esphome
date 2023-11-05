@@ -1,5 +1,5 @@
 substitutions:
-  device: mitsubishi
+  name: mitsubishi
   device_description: "Esphome component for Mitsubishi Procon"
   friendly_name: Mitsubishi
 
@@ -22,7 +22,7 @@ packages:
 #   device_base2: !include boards/board-esp32.yaml
 
 esphome:
-  name: ${device}
+  name: ${name}
 #  friendly_name: ${friendly_name}
   comment: Mitsubishi heatpump
 
@@ -42,7 +42,7 @@ modbus:
   id: modbus1
 
 modbus_controller:
-  - id: ${device}
+  - id: ${name}
     address: 1
     modbus_id: modbus1
     setup_priority: -10
@@ -51,7 +51,7 @@ modbus_controller:
 sensor:
     ## MelcoBEMS MINI (A1M) Firmware Version (FC4: 3, MA: 30004)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: procon_version
     name: ${procon_version}
     icon: mdi:memory
@@ -63,7 +63,7 @@ sensor:
 
     ## Heat Pump Frequency – Master (FC4: 32, MA: 30033)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: heat_pump_frequency_master
     name: ${heat_pump_frequency_master}
     icon: mdi:sine-wave
@@ -76,7 +76,7 @@ sensor:
 
     ## Temperature Setpoint – Zone 1 (signed) (FC4: 40, MA: 30041)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: temperature_setpoint_zone_1
     name: ${temperature_setpoint_zone_1}
     icon: mdi:home-thermometer
@@ -91,7 +91,7 @@ sensor:
 
     ## Flow Temperature Setpoint – Zone 1 (signed) (FC4: 44, MA: 30045)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: flow_temperature_setpoint_zone_1
     name: ${flow_temperature_setpoint_zone_1}
     icon: mdi:thermometer-auto
@@ -106,7 +106,7 @@ sensor:
 
      ## Legionella Temperature Setpoint (signed) (FC4: 48, MA: 30049)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: legionella_temperature_setpoint
     name: ${legionella_temperature_setpoint}
     icon: mdi:bacteria-outline
@@ -121,7 +121,7 @@ sensor:
 
     ## DHW Temperature Drop (signed) (FC4: 50, MA: 30051)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: DHW_temperature_drop
     name: ${DHW_temperature_drop}
     icon: mdi:thermometer-chevron-down
@@ -136,7 +136,7 @@ sensor:
 
     ## Room Temperature – Zone 1 (signed) (FC4: 52, MA: 30053)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: room_temperature_zone_1
     name: ${room_temperature_zone_1}
     icon: mdi:home-thermometer
@@ -151,7 +151,7 @@ sensor:
 
     ## Refrigerant Liquid Temperature (signed) (FC4: 56, MA: 30057)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: refrigerant_liquid_temperature
     name: ${refrigerant_liquid_temperature}
     icon: mdi:snowflake-thermometer
@@ -166,7 +166,7 @@ sensor:
     
     ## Outdoor Ambient Temperature (signed) (FC4: 58, MA: 30059)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: outdoor_ambient_temperature
     name: ${outdoor_ambient_temperature}
     icon: mdi:thermometer
@@ -181,7 +181,7 @@ sensor:
 
     ## Flow Temperature (signed) (FC4: 60, MA: 30061)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: flow_temperature
     name: ${flow_temperature}
     icon: mdi:thermometer-auto
@@ -196,7 +196,7 @@ sensor:
 
     ## Return Temperature (signed) (FC4: 62, MA: 30063)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: return_temperature
     name: ${return_temperature}
     icon: mdi:thermometer
@@ -211,7 +211,7 @@ sensor:
 
     ## Tank Water Temperature (signed) (FC4: 64, MA: 30065)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: tank_water_temperature
     name: ${tank_water_temperature}
     icon: mdi:water-thermometer
@@ -226,7 +226,7 @@ sensor:
 
     ## Return Temperature – Zone 1 (signed) (FC4: 68, MA: 30069)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: return_temperature_setpoint_zone_1
     name: ${return_temperature_setpoint_zone_1}
     icon: mdi:thermometer
@@ -241,7 +241,7 @@ sensor:
 
     ## Boiler Flow Temperature (signed) (FC4: 74, MA 30075)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: boiler_flow_temperature
     name: ${boiler_flow_temperature}
     icon: mdi:thermometer
@@ -256,7 +256,7 @@ sensor:
 
     ## Boiler Return Temperature (signed) (FC4: 76, MA 30077)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: boiler_return_temperature
     name: ${boiler_return_temperature}
     icon: mdi:thermometer
@@ -271,7 +271,7 @@ sensor:
 
     ## Heat Pump Run Time (hours) (FC4: 79, MA: 30080)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: heat_pump_run_time_1
     address: 79
     register_type: read
@@ -280,7 +280,7 @@ sensor:
 
     ## Heat Pump Run Time (hours x100) (FC4: 80, MA: 30081)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: heat_pump_run_time_100
     address: 80
     register_type: read
@@ -303,7 +303,7 @@ sensor:
 
     ## Last Measured Heating Energy Consumption – kWh part (FC4: 156, MA: 30157)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: heating_kwh
     address: 156
     state_class: total_increasing
@@ -312,7 +312,7 @@ sensor:
 
     ## Last Measured Heating Energy Consumption – Wh part (FC4: 157, MA: 30158)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: heating_wh
     address: 157
     state_class: total_increasing
@@ -334,7 +334,7 @@ sensor:
 
     ## Last Measured Cooling Energy Consumption – kWh part (FC4: 158, MA: 30159)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: cooling_kwh
     address: 158
     state_class: total_increasing
@@ -343,7 +343,7 @@ sensor:
 
     ## Last Measured Cooling Energy Consumption – Wh part (FC4: 159, MA: 30160)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: cooling_wh
     address: 159
     state_class: total_increasing
@@ -365,7 +365,7 @@ sensor:
   
     ## Last Measured DHW Energy Consumption – kWh part (FC4: 160, MA: 30161)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: dhw_kwh
     address: 160
     state_class: total_increasing
@@ -374,7 +374,7 @@ sensor:
 
     ## Last Measured DHW Energy Consumption – Wh part (FC4: 161, MA: 30162)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: dhw_wh
     address: 161
     state_class: total_increasing
@@ -396,7 +396,7 @@ sensor:
 
     ## Last Measured Total Energy Consumption – kWh (FC4: 162, MA: 30163)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: last_measured_total_energy_consumption
     name: ${last_measured_total_energy_consumption}
     address: 162
@@ -408,7 +408,7 @@ sensor:
 
     ## Last Measured Heating Energy Produced – kWh part (FC4: 166: MA: 30167)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_heating_kwh
     address: 166
     state_class: total_increasing
@@ -417,7 +417,7 @@ sensor:
 
     ## Last Measured Heating Energy Produced – Wh part (FC4: 167, MA: 30168)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_heating_wh
     address: 167
     state_class: total_increasing
@@ -439,7 +439,7 @@ sensor:
 
     ## Last Measured Cooling Energy Produced – kWh part (FC4: 168, MA: 30169)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_cooling_kwh
     address: 168
     state_class: total_increasing
@@ -448,7 +448,7 @@ sensor:
 
     ## Last Measured Cooling Energy Produced – Wh part (FC4: 169, MA: 30170)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_cooling_wh
     address: 169
     state_class: total_increasing
@@ -470,7 +470,7 @@ sensor:
 
     ## Last Measured DHW Energy Produced – kWh part (FC4: 170, MA: 30171)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_dhw_kwh
     address: 170
     state_class: total_increasing
@@ -479,7 +479,7 @@ sensor:
 
     ## Last Measured DHW Energy Produced – Wh part (FC4: 171, MA: 30172)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_dhw_wh
     address: 171
     state_class: total_increasing
@@ -531,7 +531,7 @@ sensor:
 
     ## Last Measured Total Energy Produced – kWh (FC4: 172, MA: 30173)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: last_measured_total_energy_produced
     name: ${last_measured_total_energy_produced}
     address: 172
@@ -543,7 +543,7 @@ sensor:
 
     ## Flow rate (FC4: 173, MA: 30174)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: flow_rate
     name: ${flow_rate}
     icon: mdi:arrow-right-bold-circle
@@ -555,9 +555,9 @@ sensor:
 
     ## Version of main software (FC4: 199, MA: 30200)
 #  - platform: modbus_controller
-#    modbus_controller_id: ${device}
+#    modbus_controller_id: ${name}
 #    id: version_of_main_software
-#    name: ${device} Version of main software
+#    name: ${name} Version of main software
 #    icon: mdi:memory
 #    address: 199
 #    register_type: read
@@ -567,9 +567,9 @@ sensor:
 
     ## Sub-version of software (FC4: 200, MA: 30201)
 #  - platform: modbus_controller
-#    modbus_controller_id: ${device}
+#    modbus_controller_id: ${name}
 #    id: subversion_of_software
-#    name: ${device} Sub-version of software
+#    name: ${name} Sub-version of software
 #    icon: mdi:memory
 #    address: 200
 #    register_type: read
@@ -579,7 +579,7 @@ sensor:
 
     ## Consumed Electric Power (FC4: 227, MA: 30228)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: consumed_electric_power
     name: ${consumed_electric_power}
     address: 227
@@ -591,7 +591,7 @@ sensor:
 
     ## Produced Power (FC4: 228, MA: 30229)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: produced_power
     name: ${produced_power}
     address: 228
@@ -609,7 +609,7 @@ text_sensor:
 
     ## Fault Code (decimal) (FC4: 8, MA: 30009)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: fault_code
     name: ${fault_code}
     icon: mdi:alert-circle
@@ -628,7 +628,7 @@ text_sensor:
 
     ## System Type Detected (FC4: 9, MA: 30010)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: system_type_detected
     name: ${system_type_detected}
     icon: mdi:hvac
@@ -648,7 +648,7 @@ text_sensor:
 
     ## Defrost (FC4: 26, MA: 30027)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: defrost
     name: ${defrost}
     icon: mdi:snowflake-melt
@@ -669,7 +669,7 @@ text_sensor:
 
     ## Residual heat removal (FC4: 27, MA: 30028)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: residual_heat_removal
     name: ${residual_heat_removal}
     icon: mdi:car-defrost-rear
@@ -688,7 +688,7 @@ text_sensor:
 
     ## Refrigerant Error Info (FC4: 28, MA: 30029)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: refrigerant_error_info
     name: ${refrigerant_error_info}
     entity_category: diagnostic
@@ -709,7 +709,7 @@ text_sensor:
 
     ## 7-Segment Display Error Code Digit 1 (FC4: 29, MA: 30030)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: seven_segment_display_error_code_digit_1
     name: ${seven_segment_display_error_code_digit_1}
     icon: mdi:alert-circle
@@ -734,7 +734,7 @@ text_sensor:
 
     ## 7-Segment Display Error Code Digit 2 (FC4: 30, MA: 30031)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: seven_segment_display_error_code_digit_2
     name: ${seven_segment_display_error_code_digit_2}
     icon: mdi:alert-circle
@@ -772,7 +772,7 @@ text_sensor:
 
     ## Heat Source Status (FC4: 39, MA: 30040)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: heat_source_status
     name: ${heat_source_status}
     icon: mdi:heating-coil
@@ -793,7 +793,7 @@ text_sensor:
 
     ## Model Profile 1 (FC4: 151, MA: 30152)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: model_profile_1
     name: ${model_profile_1}
     icon: mdi:hvac
@@ -825,7 +825,7 @@ text_sensor:
     ## NOTE: Seems not available for FTC4,5,6 but does seem to work
     ## NOTE: This is writeable holding register but we keep it readonly for now
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: operating_mode
     name: ${operating_mode}
     icon: mdi:message-question-outline
@@ -851,7 +851,7 @@ text_sensor:
 number:
     ## Set Tank Water Temperature (signed) (FC6: 30, MA: 40031)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: set_tank_water_temperature
     name: ${set_tank_water_temperature}
     device_class: temperature
@@ -868,7 +868,7 @@ number:
 
     ## H/C Thermostat Target Temperature – Zone 1 (signed) (FC6: 32, MA: 40033)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: hc_thermostat_target_temperature_zone_1
     name: ${hc_thermostat_target_temperature_zone_1}
     device_class: temperature
@@ -885,7 +885,7 @@ number:
 
     ## Thermostat Target Temperature – Zone 1 (signed) (FC6: 54, MA: 40055)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: thermostat_target_temperature_zone_1
     name: ${thermostat_target_temperature_zone_1}
     device_class: temperature
@@ -914,7 +914,7 @@ switch:
 
     ## Operating Mode (DHW) (FC6: 27, MA: 40028)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: operating_mode_dhw
     name: ${operating_mode_dhw}
     register_type: holding
@@ -925,7 +925,7 @@ switch:
 
     ## Force DHW (FC6: 37, MA: 40038)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: force_dhw
     name: ${force_dhw}
     register_type: holding
@@ -935,7 +935,7 @@ switch:
 
     ## Holiday (FC6: 38, MA: 40039)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: set_holiday
     name: ${set_holiday}
     register_type: holding
@@ -945,7 +945,7 @@ switch:
 
     ## Cooling On Prohibit – Zone 1 (FC6: 41, MA: 40042)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: cooling_on_prohibit_zone_1
     name: ${cooling_on_prohibit_zone_1}
     register_type: holding
@@ -957,7 +957,7 @@ switch:
 
     ## System ON/OFF (FC1: 1, MA: 00002)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     name: ${system_on_off}
     register_type: coil
     address: 1
@@ -967,7 +967,7 @@ switch:
 select:
     ## A/C mode – Zone 1 (FC6: 28, 40029)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: ac_mode_zone_1
     name: ${ac_mode_zone_1}
     address: 28
@@ -983,7 +983,7 @@ select:
 
     ## HC Control Type (FC6: 58, 40059)
   - platform: modbus_controller
-    modbus_controller_id: ${device}
+    modbus_controller_id: ${name}
     id: hc_control_type
     name: ${hc_control_type}
     address: 58
