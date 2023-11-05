@@ -14,11 +14,10 @@ esphome:
 # Modbus uart
 uart:
   id: mod_bus
-  baud_rate: 19200
+  baud_rate: 9600
   stop_bits: 1
   tx_pin: 16
   rx_pin: 12
-  parity: even
 
 # Option for 2x I2C connectors  ***experimental***
 # Comment with # if not used.

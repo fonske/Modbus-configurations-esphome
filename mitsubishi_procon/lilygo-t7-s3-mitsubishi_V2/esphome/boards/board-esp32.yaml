@@ -9,11 +9,10 @@ esp32:
 # uart for modbus rtu
 uart:
   id: mod_bus
-  baud_rate: 19200
+  baud_rate: 9600
   stop_bits: 1
   tx_pin: 23
   rx_pin: 19
-  parity: even  
 
 # i2c for extra sensor
 #i2c:  
