@@ -4,41 +4,27 @@ substitutions:
   friendly_name: Mitsubishi
 
 # In order to use other language, fix include file name below:
-# Currently supported languages are en, nl. 
+# Currently supported languages are EN, NL. 
 packages:
   remote_package:
     url: https://github.com/fonske/Modbus-configurations-esphome
     ref: main
     files: 
       - mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/esphome/labels/.procon-labels-en.yaml
-#      #- mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/esphome/labels/.procon-labels-nl.yaml
+      # - mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/esphome/labels/.procon-labels-nl.yaml
+      # - mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/esphome/boards/board-esp32.yaml
+      - mitsubishi_procon/lilygo-t7-s3-mitsubishi_V2/esphome/boards/board-esp32S3.yaml
+
+# for developing/testing, uncomment local includes and comment out remote_package part.
+# packages:
+#   substitutions: !include labels/.procon-labels-en.yaml
+#   device_base1: !include .procon.base.yaml
+#   device_base2: !include boards/board-esp32.yaml
 
 esphome:
   name: ${device}
 #  friendly_name: ${friendly_name}
   comment: Mitsubishi heatpump
-  ## Get rid of CDC error:
-  platformio_options:
-    board_build.extra_flags:
-      - "-DARDUINO_USB_CDC_ON_BOOT=0"
-
-## lilygo T7-S3  ESP32S3:
-esp32:
-  board: adafruit_feather_esp32s3_nopsram
-  framework:
-    type: arduino
-
-# Enable logging
-logger:
-  logs:
-    modbus_controller.sensor: INFO  #set all to DEBUG for higher log level
-    modbus_controller.output: INFO
-    modbus.number: INFO
-    esp32.preferences: INFO
-    sensor: INFO
-    text_sensor: INFO
-#    dallas.sensor: WARN #disable if dallas is not used
-    number: INFO  
 
 # Enable Home Assistant API
 api:
@@ -51,44 +37,7 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-# Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "${friendly_name} Hotspot"
-    password: "configesp"
-    
-captive_portal:
-    
-web_server:
-  port: 80
-
-## Option for 2x I2C connectors
-## Comment with # if not used.
-#i2c:  
-#  - id: bus_a
-#    sda: 13
-#    scl: 14
-#    scan: true
-
-#  - id: bus_b
-#    sda: 10
-#    scl: 18
-#    scan: true
-
-## Option for multiple DS18b20 on last 3 terminals -/Signal/+ 
-## Comment with # if not used.
-### DS18b20's ###
-#dallas:
-#  - pin: 8
-#    update_interval: 30s
-
 ### modbus ###
-uart:
-  id: mod_bus
-  tx_pin: 16
-  rx_pin: 12 
-  baud_rate: 9600
-  stop_bits: 1
-  
 modbus:
   id: modbus1
 
@@ -99,42 +48,7 @@ modbus_controller:
     setup_priority: -10
     update_interval: 10s
 
-# Enable Status LED.
-status_led:
-  pin:
-    number: 17
-
 sensor:
-## Option for multiple DS18b20 on last 3 terminals -/Signal/+ 
-## Comment with # if not used.
-## 2x ds18b20: 
-#  - platform: dallas
-#    address: 0x923c01d075935628  ##find adress in esphome log
-#    name: "Temperature 1"
-#    id: temperature_1
-#    filters:
-#    - filter_out: NAN
-
-#  - platform: dallas
-#    address: 0x1f3c01d07519cb28  ##find adress in esphome log
-#    name: "Temperature 2"
-#    id: temperature_2
-#    filters:
-#    - filter_out: NAN
-
-## Option for DHT11 or DHT22 on last 3 terminals -/Signal/+ 
-## Comment with # if not used.
-#  - platform: dht
-#    model: DHT11
-#    pin: 8
-#    temperature:
-#      name: Temperature
-#      id: mitsubishi_temperature
-#    humidity:
-#      name: Humidity
-#      id: mitsubishi_humidity
-#    update_interval: 15s
-
     ## MelcoBEMS MINI (A1M) Firmware Version (FC4: 3, MA: 30004)
   - platform: modbus_controller
     modbus_controller_id: ${device}
