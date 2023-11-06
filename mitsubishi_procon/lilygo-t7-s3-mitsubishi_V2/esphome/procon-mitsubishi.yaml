@@ -36,6 +36,8 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  # uncomment when it needs to run on a .local domain
+  #  domain: .local
 
 ### modbus ###
 modbus:
@@ -583,6 +585,7 @@ sensor:
     id: consumed_electric_power
     name: ${consumed_electric_power}
     address: 227
+    unit_of_measurement: "kWh"
     icon: mdi:lightning-bolt
     device_class: energy
     state_class: total_increasing
@@ -595,6 +598,7 @@ sensor:
     id: produced_power
     name: ${produced_power}
     address: 228
+    unit_of_measurement: "kWh"
     icon: mdi:lightning-bolt
     device_class: energy
     state_class: total_increasing
