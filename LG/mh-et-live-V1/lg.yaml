@@ -3,6 +3,7 @@
 esphome:
   name: esp-wp-control
 
+## Wemos D32 - MH-ET-LIVE
 esp32:
   board: mhetesp32minikit
   framework:
