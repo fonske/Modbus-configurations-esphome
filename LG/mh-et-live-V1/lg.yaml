@@ -1,0 +1,486 @@
+### Esphome code to ctrl a LG heatpump
+### Many thanks to paQ: https://gathering.tweakers.net/forum/list_message/77104538#77104538
+esphome:
+  name: esp-wp-control
+
+esp32:
+  board: mhetesp32minikit
+  framework:
+    type: arduino
+
+# Enable Home Assistant API
+api:
+  reboot_timeout: 0s
+
+ota:
+#  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+#  manual_ip:
+#    static_ip: 192.168.108.101
+#    gateway: 192.168.108.1
+#    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Toverdoos Fallback Hotspot"
+    password: "configesp"
+
+captive_portal:
+    
+web_server:
+  port: 80
+
+button:
+  - platform: restart
+    id: restart_button
+    name: "Herstart ESP module"
+
+# Enable logging. Disable modbus controller debug messages
+logger:
+  logs:
+    modbus_controller.sensor: WARN
+    modbus_controller.output: WARN     
+    esp32.preferences: WARN
+    sensor: WARN
+
+globals:
+  - id: stooklijn_target
+    type: float
+    restore_value: no
+    initial_value: '25'
+  - id: force_update_stooklijn
+    type: bool
+    restore_value: no
+    initial_value: 'true'
+
+number:
+  - platform: template
+    id: stooklijn_min_oat
+    name: "Stooklijn Minimum Buitentemperatuur"
+    min_value: -15
+    max_value: 4
+    step: 1
+    restore_value: yes
+    initial_value: -5
+    unit_of_measurement: "°C"
+    optimistic: true
+    set_action:
+      then:
+        - lambda: |-
+            id(force_update_stooklijn) = true;
+
+  - platform: template
+    id: stooklijn_max_oat
+    name: "Stooklijn Maximum Buitentemperatuur"
+    min_value: 5
+    max_value: 20
+    step: 1
+    restore_value: yes
+    initial_value: 13
+    unit_of_measurement: "°C"
+    optimistic: true
+    set_action:
+      then:
+        - lambda: |-
+            id(force_update_stooklijn) = true;
+
+  - platform: template
+    id: stooklijn_max_wtemp
+    name: "Stooklijn Maximum Watertemperatuur"
+    min_value: 30
+    max_value: 35
+    step: 1
+    restore_value: yes
+    initial_value: 30
+    unit_of_measurement: "°C"
+    optimistic: true
+    set_action:
+      then:
+        - lambda: |-
+            id(force_update_stooklijn) = true;
+
+  - platform: template
+    id: stooklijn_min_wtemp
+    name: "Stooklijn Minimum Watertemperatuur"
+    min_value: 25
+    max_value: 30
+    step: 1
+    restore_value: yes
+    initial_value: 28
+    unit_of_measurement: "°C"
+    optimistic: true
+    set_action:
+      then:
+        - lambda: |-
+            id(force_update_stooklijn) = true;
+
+# offset op stooklijn. Handig voor nachtverlaging of buiten de deur? Kijk uit met hysterese settings van de controller!
+  - platform: template
+    name: "Stooklijn offset"
+    id: wp_stooklijn_offset
+    min_value: -4
+    max_value: 4
+    initial_value: 0
+    step: 1
+    restore_value: yes
+    unit_of_measurement: "°C"
+    optimistic: true
+    set_action:
+      then:
+        - lambda: |-
+            id(force_update_stooklijn) = true;
+
+# mee aan het proberen
+  - platform: template
+    id: oat_silent_always_off
+    name: "Buitentemperatuur silent uit"
+    min_value: -20
+    max_value: 10
+    step: 1
+    restore_value: yes
+    initial_value: 2
+    unit_of_measurement: "°C"
+    optimistic: true
+    icon: mdi:volume-plus
+
+  - platform: template
+    id: oat_silent_always_on
+    name: "Buitentemperatuur silent aan"
+    min_value: -20
+    max_value: 20
+    step: 1
+    restore_value: yes
+    initial_value: 6
+    unit_of_measurement: "°C"
+    optimistic: true
+    icon: mdi:volume-off
+
+switch:
+  - platform: output
+    name: "Silent Mode"
+    id: silent_mode_switch
+    output: 'modbus_set_silent_mode'
+
+  - platform: template
+    id: stooklijn_on_off
+    name: "Stooklijn On/Off"
+    optimistic: true
+
+  - platform: template
+    id: overshootcontrol_on_off
+    name: "Overshoot Control On/Off"
+    optimistic: true
+
+uart:
+  id: mod_bus
+  tx_pin: GPIO23
+  rx_pin: GPIO19
+  baud_rate: 9600
+  stop_bits: 1
+  parity: NONE
+
+modbus:
+#  flow_control_pin: GPIO18
+  send_wait_time: 200ms
+  id: modbus_lg
+
+modbus_controller:
+  - id: lg
+    ## the Modbus device addr
+    address: 0x1
+    modbus_id: modbus_lg
+    setup_priority: -10
+    update_interval: 10s
+
+output:
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    id: water_temp_target_output
+    register_type: holding
+    address: 2
+    value_type: U_WORD
+    multiply: 1000
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    id: modbus_set_silent_mode
+    register_type: coil
+    address: 2
+
+binary_sensor:
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Pump Running"
+    id: pump_running
+    register_type: discrete_input
+    skip_updates: 3
+    address: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Compressor Running"
+    id: compressor_running
+    register_type: discrete_input
+    skip_updates: 3
+    address: 3
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Defrosting"
+    id: defrosting
+    register_type: discrete_input
+    skip_updates: 3
+    address: 4
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Silent Mode"
+    id: silent_mode
+    register_type: coil
+    skip_updates: 3
+    address: 2
+    on_state:
+      then:
+        - lambda: |-
+            if(id(silent_mode).state != id(silent_mode_switch).state) id(silent_mode_switch).publish_state(id(silent_mode).state);
+
+sensor:
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "fan"
+    id: fan
+    register_type: read
+    address: 19
+    unit_of_measurement: "RPM"
+    accuracy_decimals: 0
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Bedrijfsmodus"
+    id: bedrijfsmodus
+    register_type: read
+    address: 1
+    value_type: U_WORD  
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Water retour"
+    id: water_temp_retour
+    register_type: read
+    address: 2
+    unit_of_measurement: "°C"
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Compressor"
+    id: compressor_hz
+    register_type: read
+    address: 24
+    unit_of_measurement: "Hz"
+    value_type: U_WORD
+    accuracy_decimals: 0
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "LowPress"
+    id: LowPress
+    register_type: read
+    address: 23
+    unit_of_measurement: "mBar"
+    value_type: U_WORD
+    accuracy_decimals: 0
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "HighPress"
+    id: HighPress
+    register_type: read
+    address: 22
+    unit_of_measurement: "mBar"
+    value_type: U_WORD
+    accuracy_decimals: 0
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Pipe in Temp"
+    id: Pipein
+    register_type: read
+    address: 16
+    unit_of_measurement: "°C"
+    value_type: U_WORD
+    accuracy_decimals: 0
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Pipe out Temp"
+    id: pipeout
+    register_type: read
+    address: 17
+    unit_of_measurement: "°C"
+    value_type: U_WORD
+    accuracy_decimals: 0
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "flow rate"
+    id: flow
+    register_type: read
+    address: 8
+    unit_of_measurement: "l/min"
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Water aanvoer"
+    id: water_temp_aanvoer
+    register_type: read
+    address: 3
+    unit_of_measurement: "°C"
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+    on_value:
+      then:
+        - lambda: |-
+
+            if(id(bedrijfsmodus).state != 2 ) return;
+
+            if(isnan(id(buiten_temp).state)) return;
+            if(!id(stooklijn_on_off).state) return;
+
+            
+            static float prev_oat = 0;                                 // hold previous script run ota value to check if it changed since last run
+            static float prev_tr = id(water_temp_retour).state;
+            float temp_new_target = id(watertemp_target).state;   //new anti-pendel target
+            static bool target_reached = false;                        //system logic (to switch off after target is reached)
+
+
+                // ----------------calculate stooklijn target---------------------------------
+            float oat = round(id(buiten_temp).state);
+
+            if(prev_oat != oat || id(force_update_stooklijn)){      // if no oat change, no update needed, unless forced or first run
+              prev_oat = oat;
+
+              id(force_update_stooklijn) = false;                       //reset force boolean
+              
+              const float Z = ((float)id(stooklijn_min_wtemp).state-(float)id(stooklijn_max_wtemp).state) / ((float)id(stooklijn_max_oat).state - (float)id(stooklijn_min_oat).state);
+              ESP_LOGD("stooklijn", "Stooklijn, working mode is heating, with oat: %f, Z: %f",oat, Z);
+              if(oat < id(stooklijn_min_oat).state) {                       //if oat below minimum oat, clamp to minimum value
+                oat = id(stooklijn_min_oat).state;
+              } else if(oat > id(stooklijn_max_oat).state) {                //if oat above max value, clamp to maximum value
+                oat = id(stooklijn_max_oat).state;
+              }
+              id(stooklijn_target) = (int)round(Z * (oat - id(stooklijn_min_oat).state) + id(stooklijn_max_wtemp).state) + (id(wp_stooklijn_offset).state); 
+              
+              ESP_LOGD("stooklijn", "New stooklijn target value (after correction): %f", id(stooklijn_target));
+              id(watertemp_target).publish_state(id(stooklijn_target));              //publish new stooklijn value to watertemp value sensor
+            }
+          
+
+
+                // ---------------------calculate new anti-overshoot target---------------------------------
+
+
+            if(((id(stooklijn_target) - id(water_temp_aanvoer).state) > 0) || (id(water_temp_aanvoer).state-id(water_temp_retour).state > 4) ) {           // check if target is reached
+              target_reached = false;
+            } else {
+              target_reached = true;
+            }
+
+                // ----------------------------------Run when compressor is running---------------------------------
+            if(id(compressor_running).state)  {
+            
+              if((!target_reached) && (id(overshootcontrol_on_off).state)){
+                
+                float tmp_retour = id(water_temp_retour).state - prev_tr;
+
+                if((tmp_retour >= 0 || tmp_retour < -1))  {        //retour temp sometimes drops by less than 1 degrC only one measurement
+                  temp_new_target = round((id(water_temp_retour).state + (5*(id(water_temp_retour).state - 17)) / (id(stooklijn_target) - 25)) * 10 ) / 10;
+                  if((temp_new_target-id(water_temp_retour).state) < 4) temp_new_target = id(water_temp_retour).state + 4;
+                  prev_tr = id(water_temp_retour).state;
+                } else {
+                  temp_new_target = round((prev_tr + (5*(prev_tr - 17)) / (id(stooklijn_target) - 25)) * 10 ) / 10;
+                  if((temp_new_target-prev_tr) < 4) temp_new_target = prev_tr + 4;
+                }
+
+              } else temp_new_target = id(stooklijn_target);
+
+
+              if(temp_new_target > id(stooklijn_target)) temp_new_target = id(stooklijn_target);        //make sure value is below minimum, or above maximum
+              ESP_LOGD("anti-pendel", "RETURN_TEMP: %f OUTLET_TEMP: %f TARGET: %f PENDEL_TARGET: %f",id(water_temp_retour).state,id(water_temp_aanvoer).state,id(stooklijn_target),temp_new_target);
+              id(pendel_watertemp_target).publish_state(temp_new_target);                               //update sensor
+              id(water_temp_target_output).set_level(temp_new_target*0.01);             //update target through modbus (set level needs value between 0-1, so divide by 100)
+            } else if(!id(compressor_running).state) {
+              id(water_temp_target_output).set_level(id(stooklijn_target)*0.01);                        //(set level needs value between 0-1, so divide by 100)
+              target_reached = false;
+
+            }
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Tempbuiten"
+    id: buiten_temp
+    register_type: read
+    skip_updates: 3
+    address: 12
+    unit_of_measurement: "°C"
+    value_type: S_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+      - sliding_window_moving_average:
+          window_size: 15 
+          send_every: 15    
+  
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Binnentemperatuur"
+    id: binnen_temp
+    register_type: read
+    skip_updates: 3
+    address: 7
+    unit_of_measurement: "°C"
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: lg
+    name: "Doeltemperatuur"
+    id: doel_temp
+    register_type: holding
+    address: 2
+    unit_of_measurement: "°C"
+    value_type: U_WORD
+    accuracy_decimals: 1
+    skip_updates: 1
+    filters:
+      - multiply: 0.1
+
+  - platform: template
+    name: "Stooklijn Watertemp Target"
+    id: watertemp_target
+    unit_of_measurement: "°C"
+    update_interval: 10s
+    lambda: |-
+        return id(stooklijn_target);
+  - platform: template
+    name: "Anti-pendel Watertemp Target"
+    id: pendel_watertemp_target
+    unit_of_measurement: "°C"
+    update_interval: 10s
