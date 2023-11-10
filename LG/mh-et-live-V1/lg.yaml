@@ -1,7 +1,10 @@
-### Esphome code to ctrl a LG heatpump
-### Many thanks to paQ: https://gathering.tweakers.net/forum/list_message/77104538#77104538
-esphome:
+substitutions:
   name: esp-wp-control
+  comment: LG warmtepomp
+
+esphome:
+  name: ${name}
+  comment: ${comment}
 
 ## Wemos D32 - MH-ET-LIVE
 esp32:
@@ -26,7 +29,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Toverdoos Fallback Hotspot"
+    ssid: "${name}"
     password: "configesp"
 
 captive_portal:
