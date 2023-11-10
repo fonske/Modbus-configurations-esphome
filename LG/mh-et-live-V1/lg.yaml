@@ -1,3 +1,5 @@
+### Esphome code to ctrl a LG heatpump
+### Many thanks to paQ: https://gathering.tweakers.net/forum/list_message/77104538#77104538
 substitutions:
   name: esp-wp-control
   comment: LG warmtepomp
