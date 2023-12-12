@@ -1,5 +1,6 @@
 ### Esphome code to ctrl a LG heatpump
 ### Many thanks to paQ: https://gathering.tweakers.net/forum/list_message/77104538#77104538
+### https://github.com/paqpaqpaq/ThermaV_overshoot_logic/blob/main/LG_thermaV_logic.yaml
 substitutions:
   name: esp-wp-control
   comment: LG warmtepomp
@@ -361,7 +362,7 @@ sensor:
     unit_of_measurement: "mBar"
     value_type: U_WORD
     accuracy_decimals: 0
-    
+
   - platform: modbus_controller
     modbus_controller_id: lg
     name: "Pipe in Temp"
