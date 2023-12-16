@@ -72,6 +72,18 @@ web_server:
 #  - pin: 8
 #    update_interval: 30s
 
+switch:
+## Option for Relay
+## Comment with # if not used.
+  ## Relay
+  - platform: gpio
+    pin:
+      number: 5
+      inverted: false
+    name: ${relay}
+    id: relay
+    icon: mdi:alarm-bell
+    
 ### modbus ###
 uart:
   id: mod_bus
