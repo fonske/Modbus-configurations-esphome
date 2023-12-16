@@ -80,10 +80,10 @@ switch:
     pin:
       number: 5
       inverted: false
-    name: ${relay}
+    name: Relais
     id: relay
     icon: mdi:alarm-bell
-    
+
 ### modbus ###
 uart:
   id: mod_bus
