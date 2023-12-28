@@ -9,9 +9,9 @@ esphome:
   name: ${name}
   comment: ${comment}
   ## Get rid of CDC error:
-  platformio_options:
-    board_build.extra_flags:
-      - "-DARDUINO_USB_CDC_ON_BOOT=0"
+  #platformio_options:
+  #  board_build.extra_flags:
+  #    - "-DARDUINO_USB_CDC_ON_BOOT=0"
 
 ## lilygo T7-S3  ESP32S3:
 esp32:
@@ -71,18 +71,6 @@ web_server:
 #dallas:
 #  - pin: 8
 #    update_interval: 30s
-
-switch:
-## Option for Relay
-## Comment with # if not used.
-  ## Relay
-  - platform: gpio
-    pin:
-      number: 5
-      inverted: false
-    name: Relais
-    id: relay
-    icon: mdi:alarm-bell
 
 ### modbus ###
 uart:
@@ -266,6 +254,17 @@ switch:
     optimistic: true
     icon: mdi:rocket
 
+## Option for Relay
+## Comment with # if not used.
+  ## Relay
+  - platform: gpio
+    pin:
+      number: 5
+      inverted: false
+    name: Relais
+    id: relay
+    icon: mdi:alarm-bell
+    
 output:
   - platform: modbus_controller
     modbus_controller_id: lg
