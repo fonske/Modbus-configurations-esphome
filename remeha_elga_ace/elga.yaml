@@ -16,14 +16,14 @@ esphome:
 
 ## MH-ET-LIVE  ESP32: / on V1
 esp32:
-  board: mhetesp32minikit
-  framework:
-    type: arduino
-
-## lilygo T7-S3  ESP32S3 / on V2
-#  board: adafruit_feather_esp32s3_nopsram
+#  board: mhetesp32minikit
 #  framework:
 #    type: arduino
+
+## lilygo T7-S3  ESP32S3 / on V2
+  board: adafruit_feather_esp32s3_nopsram
+  framework:
+    type: arduino
 
 # Enable logging
 logger:
@@ -79,22 +79,22 @@ web_server:
 #    update_interval: 30s
 
 ### modbus ### on V1
-uart:
-  id: mod_bus
-  tx_pin: 23 
-  rx_pin: 19 
-  baud_rate: 9600
-  stop_bits: 1
-  parity: none
-
-### modbus ### on V2
 #uart:
 #  id: mod_bus
-#  tx_pin: 16
-#  rx_pin: 12 
+#  tx_pin: 23 
+#  rx_pin: 19 
 #  baud_rate: 9600
 #  stop_bits: 1
 #  parity: none
+
+### modbus ### on V2
+uart:
+  id: mod_bus
+  tx_pin: 16
+  rx_pin: 12 
+  baud_rate: 9600
+  stop_bits: 1
+  parity: none
 
 modbus:
   id: modbus1
@@ -189,7 +189,7 @@ sensor:
 
   - name: "GTW08 DeviceTypeBoard" #Type apparaat dat zich bevindt op instance 1 (CUEHC, EEC, SCB,..)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: GTW08_DeviceTypeBoard
     internal: false
     register_type: read
@@ -199,7 +199,7 @@ sensor:
 
   - name: "GTW08 Softwareversie" #Softwareversie van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: GTW08_Softwareversie
     internal: false
     register_type: read
@@ -209,7 +209,7 @@ sensor:
 
   - name: "GTW08 DeviceConfigurationTableVersion" #Versie configuratietabel van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: GTW08_DeviceConfigurationTableVersion
     internal: false
     register_type: read
@@ -219,7 +219,7 @@ sensor:
 
   - name: "GTW08 HardwareVersion" #Hardwareversie van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..) 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: GTW08_HardwareVersion
     internal: false
     register_type: read
@@ -229,7 +229,7 @@ sensor:
 
 #  - name: "GTW08 ArticleNumber1 32 25" #Artikelnummer van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..) 
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: GTW08_ArticleNumber1_32_25
 #    internal: false
 #    register_type: holding
@@ -239,7 +239,7 @@ sensor:
 
 #  - name: "GTW08 ArticleNumber1 16 9" #Artikelnummer van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..) 
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: GTW08_ArticleNumber1_16_9
 #    internal: false
 #    register_type: holding
@@ -252,7 +252,7 @@ sensor:
 
 #  - name: "Elga PowerSetpoint" #Vermogenssetpoint warmtevraag om naar het CUapparaat te sturen
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_PowerSetpoint
 #    internal: false
 #    register_type: read
@@ -267,7 +267,7 @@ sensor:
 
 #  - name: "Elga TemperatureSetpoint 8-1" #Temperatuursetpoint warmtevraag om naar het CUapparaat te sturen
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_TemperatureSetpoint_8_1
 #    internal: false
 #    register_type: read
@@ -282,7 +282,7 @@ sensor:
 
 #  - name: "Elga AlgoritthmType" #Type regeling (0 : Beide; 1 : Vermogen; 2 : Temperatuur, 3 : Geen)
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_AlgoritthmType 
 #    internal: false
 #    register_type: holding
@@ -293,7 +293,7 @@ sensor:
 
 #  - name: "Elga HeatDemandtype" #Type warmtevraag (0 : Geen; 7 : Verwarming; 8 : Koeling)
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_HeatDemandtype 
 #    internal: false
 #    register_type: holding
@@ -304,7 +304,7 @@ sensor:
 
   - name: "Elga PowerActualReceived" #Werkelijk uitgangsvermogen (totale werkelijke vermogen ontvangen van de aangesloten ketel)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_PowerActualReceived 
     internal: false
     register_type: read
@@ -319,7 +319,7 @@ sensor:
 
   - name: "Elga Aanvoertempearatuur Combi" #FlowTemperatureReceived
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: FlowTemperatureReceived
     internal: false
     register_type: read
@@ -334,7 +334,7 @@ sensor:
 
   - name: "Elga Retourtemperatuur" #ReturnTemperatureReceived
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: ReturnTemperatureReceived
     internal: false
     register_type: read
@@ -349,7 +349,7 @@ sensor:
 
 #  - name: "Elga ProducerManagerStatusBitfieldReceived" #0 Pomp actief, 1 Vermogen motor actief (brander, compressor of backup), 2 SWW in uitvoering, 3 CV mogelijk, 4 SWW mogelijk, 5 Koeling mogelijk, 6 Elektrisch mogelijk, 7 Vergrendeling aanwezig
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_ProducerManagerStatusBitfieldReceived
 #    internal: false
 #    register_type: holding
@@ -360,7 +360,7 @@ sensor:
 
 #  - name: "Elga ProducerManagerRequestReceived" #0 Vorstbescherming, 1 Vorstbescherming alleen pomp, 2 Schoorsteen / inbedrijfstellingsmodus, 3 Aanvraag service
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_ProducerManagerRequestReceived
 #    internal: false
 #    register_type: holding
@@ -371,7 +371,7 @@ sensor:
 
   - name: "Elga Appliance Error 8-1" #0 Fout apparaatstroom (0xFFFF betekent geen stroom)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_Appliance_Error_8_1
     internal: false
     register_type: read
@@ -382,7 +382,7 @@ sensor:
 
 #  - name: "Elga Appliance Error Priority" #0: Vergrendeling, 3: Blokkering, 6: Waarschuwing, 255: Geen fout
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_Appliance_Error_Priority
 #    internal: false
 #    register_type: holding
@@ -392,7 +392,7 @@ sensor:
 
 #  - name: "Elga Appliance status 1" #b0: varVlamAan, b1: varWarmtepompAan, b2: varElektrischeBack-upAan, b3: varElektrischeBack-up2Aan, b4: varSwwElektrischeBack-upAan, b5: varAp.serviceVereist, b6: varAp.voedingUitgeschakeldResetnodig, b7: varAp.waterdrukLaag
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_Appliance_status_1
 #    internal: false
 #    register_type: holding
@@ -402,7 +402,7 @@ sensor:
 
   - name: "Elga varChCtrBurnerStarts" #Teller branderstarts 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varChCtrBurnerStarts
     internal: false
     register_type: read
@@ -413,7 +413,7 @@ sensor:
 
   - name: "Elga varApCtrServiceBurningHours 8-1" #Aantal uren dat het apparaat actief was na servicebeurt 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrServiceBurningHours_8_1
     internal: false
     register_type: read
@@ -426,7 +426,7 @@ sensor:
 
   - name: "Elga varApCtrServiceBurnerStarts 24-17" #Aantal succesvolle compressorstarts na servicebeurt 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrServiceBurnerStarts_24_17
     internal: false
     register_type: read
@@ -436,7 +436,7 @@ sensor:
 
   - name: "Elga varApCtrBackup1Starts 24-17" #Teller starts backup1 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrBackup1Starts_24_17
     internal: false
     register_type: read
@@ -446,7 +446,7 @@ sensor:
 
   - name: "Elga varApCtrHoursTotal 8-1" #Aantal uren dat apparaat actief was
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrHoursTotal_8_1
     internal: false
     register_type: read
@@ -462,7 +462,7 @@ sensor:
 
   - name: "Elga Buitentemperatuur" #varApTOutside
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varApTOutside
     internal: false
     register_type: read
@@ -477,7 +477,7 @@ sensor:
 
 #  - name: "Elga varApSeasonMode" #Seizoensmodus actief, 0: Winter, 1:Bescherming tegen vorst in de winter, 2:Zomer neutrale band, 3: Zomer
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_varApSeasonMode
 #    internal: false
 #    register_type: holding
@@ -488,7 +488,7 @@ sensor:
 
   - name: "Elga parApSummerWinter 8-1" #Buitentemperatuur: bovengrens voor verwarming (30,5 betekent uitgeschakeld)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_parApSummerWinter_8_1
     internal: false
     register_type: holding
@@ -503,7 +503,7 @@ sensor:
 
   - name: "Elga parApNeutralBandSummerWinter 8-1" #Alleen gebruikt wanneer de generator koeling nodig heeft. Neutrale band waarbij de HP wordt gedeactiveerd
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_parApNeutralBandSummerWinter_8_1
     internal: false
     register_type: holding
@@ -513,7 +513,7 @@ sensor:
 
   - name: "Elga parApFrostMinToutside 8 -1" #Buitentemperatuur waaronder de antivriesbescherming wordt geactiveerd
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_parApFrostMinToutside_8_1
     internal: false
     register_type: holding
@@ -528,7 +528,7 @@ sensor:
 
 #  - name: "Elga parApForceSummerMode" #De verwarming is gestopt. Heet water wordt gehandhaafd. Forceer zomerstand, 0: Off, 1: On
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_parApForceSummerMode
 #    internal: false
 #    register_type: holding
@@ -538,7 +538,7 @@ sensor:
 
   - name: "Elga varApTflow" #Stromingstemperatuur
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApTflow
     internal: false
     register_type: read
@@ -553,7 +553,7 @@ sensor:
 
   - name: "Elga varApTreturn" #Retourtemperatuur
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApTreturn
     internal: false
     register_type: holding
@@ -568,7 +568,7 @@ sensor:
 
   - name: "Elga Aanvoertempearatuur WP" #remeha_varHpHeatPumpTF - Stromingstemperatuur verwarmingspomp
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_Aanvoertempearatuur_WP
     internal: false
     register_type: holding
@@ -583,7 +583,7 @@ sensor:
 
   - name: "Elga Retourtemperatuur WP" #varHpHeatPumpTR 8 -1 - Retourtemperatuur verwarmingspomp
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_Retourtemperatuur_WP
     internal: false
     register_type: holding
@@ -598,7 +598,7 @@ sensor:
 
   - name: "Elga varApInternalSetpoint" #Intern setpoint voor warmwaterproductie
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApInternalSetpoint
     internal: false
     register_type: holding
@@ -613,7 +613,7 @@ sensor:
 
   - name: "Elga Waterdruk" #ApWaterPressure
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: ApWaterPressure
     internal: false
     register_type: read
@@ -628,7 +628,7 @@ sensor:
 
   - name: "Elga Waterdoorstroming" #varApFlowmeter
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varApFlowmeter
     internal: false
     register_type: holding
@@ -643,7 +643,7 @@ sensor:
 
   - name: "Elga varApStatus" #Status van apparaat 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApStatus 
     internal: false
     register_type: holding
@@ -653,7 +653,7 @@ sensor:
 
   - name: "Elga varApSubStatus" #Substatus van apparaat
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_arApSubStatus
     internal: false
     register_type: holding
@@ -663,7 +663,7 @@ sensor:
 
   - name: "Elga varApPowerActual" #Werkelijk geproduceerd relatief vermogen
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApPowerActual
     internal: false
     register_type: read
@@ -681,7 +681,7 @@ sensor:
 
   - name: "Elga varHePowerSetpoint" #Vermogenssetpoint in % van max
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varHePowerSetpoint
     internal: false
     register_type: read
@@ -699,7 +699,7 @@ sensor:
 
   - name: "Elga Energieverbruik totaal" #varApChEnergyConsumption
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varApChEnergyConsumption
     internal: false
     register_type: read
@@ -717,7 +717,7 @@ sensor:
 
 #  - name: "Elga varApServiceRequired" #Service is vereist, 0:NEE, 1:JA
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_varApServiceRequired
 #    internal: false
 #    register_type: holding
@@ -727,7 +727,7 @@ sensor:
 
 #  - name: "Elga varApCurrentOrUpcomingServiceNotification" #Huidige of aanstaande servicemelding 1=A, 2=B, 3=C, 4=Aangepast
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_varApCurrentOrUpcomingServiceNotification
 #    internal: false
 #    register_type: holding
@@ -737,7 +737,7 @@ sensor:
 
   - name: "Elga varApCtrServiceBurningHours" #Aantal uren dat het apparaat actief was na servicebeurt
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrServiceBurningHours
     internal: false
     register_type: read
@@ -751,7 +751,7 @@ sensor:
 
   - name: "Elga varApCtrServiceOperatingHours" #Aantal uren sinds de vorige servicebeurt van het apparaat
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrServiceOperatingHours
     internal: false
     register_type: read
@@ -765,7 +765,7 @@ sensor:
 
   - name: "Elga varApCtrServiceBurnerStarts" #Aantal succesvolle compressorstarts na servicebeurt
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApCtrServiceBurnerStarts
     internal: false
     register_type: read
@@ -775,7 +775,7 @@ sensor:
 
   - name: "Elga varApplianceOnError" #Fout aanwezig op het apparaat 
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varApplianceOnError
     internal: false
     register_type: holding
@@ -785,7 +785,7 @@ sensor:
 
   - name: "Elga varACurrentError1" #Codefout van het apparaat op instance 1 (CUEHC, EEC, SCB,..)
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varACurrentError1
     internal: false
     register_type: read
@@ -795,7 +795,7 @@ sensor:
 
 #  - name: "Elga ErroPriority1" #Ernst van de fout van het apparaat op instance 1, 0 : Vergrendeling, 3 : Blokkering, 6 : Waarschuwing
 #    platform: modbus_controller
-#    modbus_controller_id: epever
+#    modbus_controller_id: ${name}
 #    id: Elga_ErroPriority1
 #    internal: false
 #    register_type: holding
@@ -808,7 +808,7 @@ sensor:
 
   - name: "Elga parZoneMaxPreHeatTime" #Maximale voorverwarmingstijd
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_parZoneMaxPreHeatTime
     internal: false
     register_type: holding
@@ -822,7 +822,7 @@ sensor:
 
   - name: "Elga Aanvoertemperatuur setpoint" #varZoneTemperatureSetpoint
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varZoneTemperatureSetpoint
     internal: false
     register_type: read
@@ -837,7 +837,7 @@ sensor:
 
   - name: "Elga Ruimtesetpoint" #remeha_varZoneTRoomSetpoint
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varZoneTRoomSetpoint
     internal: false
     register_type: read
@@ -852,7 +852,7 @@ sensor:
 
   - name: "Elga Ruimtetemperatuur" #varZoneTRoom
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varZoneTRoom
     internal: false
     register_type: read
@@ -867,7 +867,7 @@ sensor:
 
   - name: "Elga varZoneHdOnOffDemand" #Warmtevraag actief, aan/uit, 0 : UIT, 1: AAN
     platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Elga_varZoneHdOnOffDemand
     internal: false
     register_type: holding
@@ -894,7 +894,7 @@ binary_sensor:
 # b7: varAp.waterdrukLaag
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varVlamAan
   name: "App Staus 1(b0): VlamAan"
   register_type: holding
@@ -902,7 +902,7 @@ binary_sensor:
   bitmask: 0x00 #(bit 0)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varWarmtepompAan
   name: "App Staus 1(b1): WarmtePomp"
   register_type: holding
@@ -910,7 +910,7 @@ binary_sensor:
   bitmask: 0x01 #(bit 1)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varElektrischeBackupAan
   name: "App Staus 1(b2): backup1"
   register_type: holding
@@ -918,7 +918,7 @@ binary_sensor:
   bitmask: 0x02 #(bit 2)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varElektrischeBackup2Aan
   name: "App Staus 1(b3): backup2"
   register_type: holding
@@ -926,7 +926,7 @@ binary_sensor:
   bitmask: 0x04 #(bit 3)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varSwwElektrischeBack
   name: "App Staus 1(b4): SwwElektrischeBackup"
   register_type: holding
@@ -934,7 +934,7 @@ binary_sensor:
   bitmask: 0x08 #(bit 4)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: serviceVereist
   name: "App Staus 1(b5): Service vereist"
   register_type: holding
@@ -942,7 +942,7 @@ binary_sensor:
   bitmask: 0x10 #(bit 5)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: voedingUitgeschakeldResetnodig
   name: "App Staus 1(b6): voedingUitgeschakeldResetnodig"
   register_type: holding
@@ -950,7 +950,7 @@ binary_sensor:
   bitmask: 0x20 #(bit 6)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: waterdrukLaag
   name: "App Staus 1(b7): waterdrukLaag"
   register_type: holding
@@ -967,7 +967,7 @@ binary_sensor:
 # b6: varAp.koelingActief
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varAppomp
   name: "App Staus 2(b1): AP pomp"
   register_type: holding
@@ -975,7 +975,7 @@ binary_sensor:
   bitmask: 0x01 #(bit 1)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: var3wegklepOpen
   name: "App Staus 2(b2): 3-weg klep open"
   register_type: holding
@@ -983,7 +983,7 @@ binary_sensor:
   bitmask: 0x02 #(bit 2)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: var3wegklep
   name: "App Staus 2(b3): 3-weg klep"
   register_type: holding
@@ -991,7 +991,7 @@ binary_sensor:
   bitmask: 0x04 #(bit 3)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: var3wegklepgesloten
   name: "App Staus 2(b4): 3-weg klep gesloten"
   register_type: holding
@@ -999,7 +999,7 @@ binary_sensor:
   bitmask: 0x08 #(bit 4)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: varSwwActief
   name: "App Staus 2(b5): Sww Actief"
   register_type: holding
@@ -1007,7 +1007,7 @@ binary_sensor:
   bitmask: 0x10 #(bit 5)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: CvActief
   name: "App Staus 2(b6): Cv Actief"
   register_type: holding
@@ -1015,7 +1015,7 @@ binary_sensor:
   bitmask: 0x20 #(bit 6)
 
 - platform: modbus_controller
-  modbus_controller_id: epever
+  modbus_controller_id: ${name}
   id: koelingActief
   name: "App Staus 2(b7): koeling Actief"
   register_type: holding
@@ -1032,7 +1032,7 @@ text_sensor:
 #   6 Bewaking hoofdregeling address 256 / 352
 
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: txtAlgorithType
     register_type: holding
     address: 258
@@ -1053,7 +1053,7 @@ text_sensor:
 
 #   name: "Elga ProducerManagerStatusBitfieldReceived" #0 Pomp actief, 1 Vermogen motor actief (brander, compressor of backup), 2 SWW in uitvoering, 3 CV mogelijk, 4 SWW mogelijk, 5 Koeling mogelijk, 6 Elektrisch mogelijk, 7 Vergrendeling aanwezig
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: ProducerManagerStatusBitfieldReceived
     register_type: holding
     address: 275
@@ -1077,7 +1077,7 @@ text_sensor:
 
 #   name: "Elga ProducerManagerRequestReceived" #0 Vorstbescherming, 1 Vorstbescherming alleen pomp, 2 Schoorsteen / inbedrijfstellingsmodus, 3 Aanvraag service
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: ProducerManagerRequestReceived
     register_type: holding
     address: 276
@@ -1097,7 +1097,7 @@ text_sensor:
 
 #   name: "Elga Appliance Error Priority" #0: Vergrendeling, 3: Blokkering, 6: Waarschuwing, 255: Geen fout
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: ApplianceErrorPriority
     register_type: holding
     address: 278
@@ -1118,7 +1118,7 @@ text_sensor:
 #   7 Apparaat address 384 / 503
 
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varApSeasonMode
     register_type: holding
     address: 385
@@ -1139,7 +1139,7 @@ text_sensor:
 
 #   name: "Elga parApForceSummerMode" #De verwarming is gestopt. Heet water wordt gehandhaafd. Forceer zomerstand, 0: Off, 1: On
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: parApForceSummerMode
     register_type: holding
     address: 389
@@ -1160,7 +1160,7 @@ text_sensor:
 
 #   name: "Elga varApServiceRequired" #Service is vereist, 0:NEE, 1:JA
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varApServiceRequired
     register_type: holding
     address: 512
@@ -1178,7 +1178,7 @@ text_sensor:
 
 #   name: "Elga varApCurrentOrUpcomingServiceNotification" #Huidige of aanstaande servicemelding 1=A, 2=B, 3=C, 4=Aangepast
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: varApCurrentOrUpcomingServiceNotification
     register_type: holding
     address: 513
@@ -1198,7 +1198,7 @@ text_sensor:
 
 #   name: "Elga ErroPriority1" #Ernst van de fout van het apparaat op instance 1, 0 : Vergrendeling, 3 : Blokkering, 6 : Waarschuwing
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: ErroPriority1
     register_type: holding
     address: 533
@@ -1221,7 +1221,7 @@ text_sensor:
 
 
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: HeatingMode
     register_type: holding
     address: 1109
@@ -1238,7 +1238,7 @@ text_sensor:
       return x;
 
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Zone1Type
     register_type: holding
     address: 1109
@@ -1259,7 +1259,7 @@ text_sensor:
       return x;
 
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: parZone1Function
     register_type: holding
     address: 1109
@@ -1291,7 +1291,7 @@ text_sensor:
 
 number:
   - platform: modbus_controller
-    modbus_controller_id: epever
+    modbus_controller_id: ${name}
     id: Num_TemperatureSetpoint
     name: "Temperatuur setpoint"
     address: 257
