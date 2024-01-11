@@ -112,6 +112,18 @@ status_led:
   pin:
     number: 17
 
+switch:
+## Option for Relay
+## Comment with # if not used.
+  ## Relay
+  - platform: gpio
+    pin:
+      number: 5
+      inverted: false
+    name: Relais
+    id: relay
+    icon: mdi:alarm-bell
+    
 sensor:
 ## Option for multiple DS18b20 on last 3 terminals -/Signal/+ ON PCB: Resistor 4k7 needed for R2 on V2
 ## Comment with # if not used.
