@@ -54,16 +54,16 @@ web_server:
 
 ## Option for 2x I2C connectors
 ## Comment with # if not used.
-#i2c:  
-#  - id: bus_a
-#    sda: 13
-#    scl: 14
-#    scan: true
+i2c:  
+  - id: bus_a
+    sda: 13
+    scl: 14
+    scan: true
 
-#  - id: bus_b
-#    sda: 10
-#    scl: 18
-#    scan: true
+  - id: bus_b
+    sda: 10
+    scl: 18
+    scan: true
 
 ## Option for multiple DS18b20 on last 3 terminals -/Signal/+ ON PCB: Resistor 4k7 needed for R2
 ## Comment with # if not used.
@@ -315,6 +315,15 @@ binary_sensor:
             if(id(silent_mode).state != id(silent_mode_switch).state) id(silent_mode_switch).publish_state(id(silent_mode).state);
 
 sensor:
+  # M5stack KMeterIso - https://docs.m5stack.com/en/unit/KMeterISO%20Unit
+  - platform: kmeteriso
+    temperature:
+      name: Temperature
+    internal_temperature:
+      name: Internal temperature
+      entity_category: diagnostic
+    update_interval: 5s
+
   - platform: modbus_controller
     modbus_controller_id: lg
     name: "INV discharge temperature"
