@@ -1,8 +1,6 @@
 substitutions:
   name: sdm120
   device_description: "Esphome component for SDM modbus"
-  ## Order GTW-08 PCB @ https://pumpen-heizung.de/Remeha-7721982-Schnittstelle-Modbus-RTU-Gateway-GTW-08
-  ## Dutch manual: https://tools.remeha.nl/wp-content/uploads/sites/3/2020/08/Lijst-van-parameters-voor-GTW08.pdf
   friendly_name: SDM
 
 esphome:
