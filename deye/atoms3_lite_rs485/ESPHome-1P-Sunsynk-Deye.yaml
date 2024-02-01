@@ -56,7 +56,7 @@ wifi:
 #    password: !secret fallback_password
 
   fast_connect: true
-  power_save_mode: none
+#  power_save_mode: none
 
 esp32_improv:
   authorizer: None 
