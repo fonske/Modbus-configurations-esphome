@@ -138,7 +138,7 @@ sensor:
     ## Power1
   - platform: modbus_controller
     modbus_controller_id: SDM1
-    name: SDM1 Power
+    name: ${name} SDM1 Power
     register_type: read
     address: 12
     value_type: FP32
@@ -152,7 +152,7 @@ sensor:
     ## Voltage1
   - platform: modbus_controller
     modbus_controller_id: SDM1
-    name: SDM1 Voltage
+    name: ${name} SDM1 Voltage
     register_type: read
     address: 0
     value_type: FP32
@@ -166,7 +166,7 @@ sensor:
     ## Current1
   - platform: modbus_controller
     modbus_controller_id: SDM1
-    name: SDM1 Current
+    name: ${name} SDM1 Current
     register_type: read
     address: 6
     value_type: FP32
@@ -180,7 +180,7 @@ sensor:
     ## Energy1
   - platform: modbus_controller
     modbus_controller_id: SDM1
-    name: SDM1 Total Energy
+    name: ${name} SDM1 Total Energy
     register_type: read
     address: 342
     value_type: FP32
@@ -195,7 +195,7 @@ sensor:
     ## Power2
   - platform: modbus_controller
     modbus_controller_id: SDM2
-    name: SDM2 Power
+    name: ${name} SDM2 Power
     register_type: read
     address: 12
     value_type: FP32
@@ -209,7 +209,7 @@ sensor:
     ## Voltage2
   - platform: modbus_controller
     modbus_controller_id: SDM2
-    name: SDM2 Voltage
+    name: ${name} SDM2 Voltage
     register_type: read
     address: 0
     value_type: FP32
@@ -223,7 +223,7 @@ sensor:
     ## Current2
   - platform: modbus_controller
     modbus_controller_id: SDM2
-    name: SDM2 Current
+    name: ${name} SDM2 Current
     register_type: read
     address: 6
     value_type: FP32
@@ -237,7 +237,7 @@ sensor:
     ## Energy2
   - platform: modbus_controller
     modbus_controller_id: SDM2
-    name: SDM2 Total Energy
+    name: ${name} SDM2 Total Energy
     register_type: read
     address: 342
     value_type: FP32
@@ -253,14 +253,14 @@ sensor:
 ## 2x ds18b20: 
 #  - platform: dallas
 #    address: 0x923c01d075935628  ##find adress in esphome log
-#    name: "Temperature 1"
+#    name: ${name} Temperature 1
 #    id: temperature_1
 #    filters:
 #    - filter_out: NAN
 
 #  - platform: dallas
 #    address: 0x1f3c01d07519cb28  ##find adress in esphome log
-#    name: "Temperature 2"
+#    name: ${name} Temperature 2
 #    id: temperature_2
 #    filters:
 #    - filter_out: NAN
@@ -271,9 +271,9 @@ sensor:
 #    model: DHT11
 #    pin: 8
 #    temperature:
-#      name: Temperature
-#      id: mitsubishi_temperature
+#      name: ${name} Temperature
+#      id: panasonic_temperature
 #    humidity:
-#      name: Humidity
-#      id: mitsubishi_humidity
+#      name: ${name} Humidity
+#      id: panasonic_humidity
 #    update_interval: 15s
