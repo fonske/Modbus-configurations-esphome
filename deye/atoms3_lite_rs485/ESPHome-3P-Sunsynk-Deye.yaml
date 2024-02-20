@@ -205,7 +205,7 @@ sensor:
     device_class: power
     value_type: S_WORD
     
-   - platform: modbus_controller            # 634 Inverter L2 Power
+  - platform: modbus_controller            # 634 Inverter L2 Power
     modbus_controller_id: sunsynk
     name: "${friendly_name} Inverter L2 Power"
     id: sunsynk_esphome_inverter_L2_power
@@ -216,7 +216,7 @@ sensor:
     device_class: power
     value_type: S_WORD
     
-   - platform: modbus_controller            # 635 Inverter L3 Power
+  - platform: modbus_controller            # 635 Inverter L3 Power
     modbus_controller_id: sunsynk
     name: "${friendly_name} Inverter L3 Power"
     id: sunsynk_esphome_inverter_L3_power
