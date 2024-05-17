@@ -205,7 +205,6 @@ sensor:
     filters:
       - multiply: 0.001
 
-sensor:
   - platform: internal_temperature
     name: ${internal_esp_temperature}
     entity_category: diagnostic
