@@ -12,7 +12,7 @@ esphome:
     then:
       - delay: 30s
       - switch.turn_off:
-          id: ecodan_led_switch
+          id: led_switch
 
 #  RS485 base with Atom S3 lite
 esp32:
@@ -30,8 +30,8 @@ logger:
     esp32.preferences: DEBUG
     sensor: DEBUG
     text_sensor: DEBUG
-    button: WARN
-    number: WARN
+    button: DEBUG
+    number: DEBUG
     component: ERROR
 
 # Enable Home Assistant API
@@ -206,14 +206,14 @@ sensor:
       - multiply: 0.001
 
   - platform: internal_temperature
-    name: ${internal_esp_temperature}
+    name: Internal esp temperature 
     entity_category: diagnostic
 
 ###  ESP restart button
 button:
   - platform: restart
     id: restart_button
-    name: ${restart_button}
+    name: Restart button
 
 number:
     ## Set led brightness
