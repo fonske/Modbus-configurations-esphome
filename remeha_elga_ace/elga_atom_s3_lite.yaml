@@ -9,7 +9,12 @@ esphome:
   name: ${name}
 #  friendly_name: ${friendly_name}
   comment: Remeha Elga Ace warmtepomp
-
+  on_boot:
+    priority: 200
+    then:
+      - delay: 30s
+      - switch.turn_off:
+          id: led_switch
 
 #  RS485 base with Atom S3 lite
 esp32:
@@ -79,6 +84,79 @@ modbus_controller:
     setup_priority: -10
     update_interval: 15s
 
+light:
+#G35=RGB WS2812C-2020
+  - platform: esp32_rmt_led_strip
+    name: Led
+    id: led
+    internal: true
+    rgb_order: GRB
+    pin: 35
+    num_leds: 4
+    # RMT 0 channels will be occupied by IR
+    rmt_channel: 1
+    chipset: ws2812
+    restore_mode: ALWAYS_ON  #OFF?
+
+
+
+###  ESP restart button
+button:
+  - platform: restart
+    id: restart_button
+    name: Restart button
+
+number:
+    ## Set led brightness
+  - platform: template
+    id: led_brightness
+    name: LED brightness
+    icon: mdi:toggle-switch-variant
+    mode: slider
+    entity_category: config
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    step: 10
+    initial_value: 70
+    restore_value: yes
+    unit_of_measurement: "%"
+    on_value:
+      then:
+        - if:
+            condition:
+              - light.is_on: led
+            then:
+            - light.turn_on:
+                id: led
+                brightness: !lambda |-
+                  // output value must be in range 0 - 1.0
+                  return id(led_brightness).state / 100.0;
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Num_TemperatureSetpoint
+    name: "Temperatuur setpoint"
+    address: 257
+    value_type: S_WORD
+    multiply: 100
+
+switch:
+  - platform: template
+    id: led_switch
+    name: LED switch
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON 
+    lambda: return id(led_switch).state;
+    turn_on_action:
+      - light.turn_on:
+          id: led
+          brightness: !lambda |-
+            // output value must be in range 0 - 1.0
+            return id(led_brightness).state / 100.0;
+    turn_off_action:
+      - light.turn_off:
+          id: led
     
 sensor:
 # calculating COP thanks to JBtL @ tweakers.net
@@ -819,6 +897,23 @@ sensor:
 
 
 binary_sensor:
+#G41_button Atom  
+  - platform: gpio
+    name: Buttonw
+    id: g41button
+    pin:
+      number: GPIO41
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    internal: true
+    filters:
+      - delayed_off: 10ms
+    # Toggle the switch when the pushbutton is pressed
+    on_press:
+      then:
+        - switch.toggle: led_switch
 
 #appliance status 1: 279
 # b0: varVlamAan
@@ -830,134 +925,134 @@ binary_sensor:
 # b6: varAp.voedingUitgeschakeldResetnodig
 # b7: varAp.waterdrukLaag
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varVlamAan
-  name: "App Staus 1(b0): VlamAan"
-  register_type: holding
-  address: 279
-  bitmask: 0x00 #(bit 0)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varVlamAan
+    name: "App Staus 1(b0): VlamAan"
+    register_type: holding
+    address: 279
+    bitmask: 0x00 #(bit 0)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varWarmtepompAan
-  name: "App Staus 1(b1): WarmtePomp"
-  register_type: holding
-  address: 279
-  bitmask: 0x01 #(bit 1)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varWarmtepompAan
+    name: "App Staus 1(b1): WarmtePomp"
+    register_type: holding
+    address: 279
+    bitmask: 0x01 #(bit 1)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varElektrischeBackupAan
-  name: "App Staus 1(b2): backup1"
-  register_type: holding
-  address: 279
-  bitmask: 0x02 #(bit 2)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varElektrischeBackupAan
+    name: "App Staus 1(b2): backup1"
+    register_type: holding
+    address: 279
+    bitmask: 0x02 #(bit 2)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varElektrischeBackup2Aan
-  name: "App Staus 1(b3): backup2"
-  register_type: holding
-  address: 279
-  bitmask: 0x04 #(bit 3)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varElektrischeBackup2Aan
+    name: "App Staus 1(b3): backup2"
+    register_type: holding
+    address: 279
+    bitmask: 0x04 #(bit 3)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varSwwElektrischeBack
-  name: "App Staus 1(b4): SwwElektrischeBackup"
-  register_type: holding
-  address: 279
-  bitmask: 0x08 #(bit 4)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varSwwElektrischeBack
+    name: "App Staus 1(b4): SwwElektrischeBackup"
+    register_type: holding
+    address: 279
+    bitmask: 0x08 #(bit 4)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: serviceVereist
-  name: "App Staus 1(b5): Service vereist"
-  register_type: holding
-  address: 279
-  bitmask: 0x10 #(bit 5)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: serviceVereist
+    name: "App Staus 1(b5): Service vereist"
+    register_type: holding
+    address: 279
+    bitmask: 0x10 #(bit 5)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: voedingUitgeschakeldResetnodig
-  name: "App Staus 1(b6): voedingUitgeschakeldResetnodig"
-  register_type: holding
-  address: 279
-  bitmask: 0x20 #(bit 6)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: voedingUitgeschakeldResetnodig
+    name: "App Staus 1(b6): voedingUitgeschakeldResetnodig"
+    register_type: holding
+    address: 279
+    bitmask: 0x20 #(bit 6)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: waterdrukLaag
-  name: "App Staus 1(b7): waterdrukLaag"
-  register_type: holding
-  address: 279
-  bitmask: 0x40 #(bit 7)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: waterdrukLaag
+    name: "App Staus 1(b7): waterdrukLaag"
+    register_type: holding
+    address: 279
+    bitmask: 0x40 #(bit 7)
 
-#280 - Appliance status 2
-# b0: varAp.pomp
-# b1: var3-wegklepOpen
-# b2: var3-wegklep
-# b3: var3-wegklepGesloten
-# b4: VarAp.SwwActief
-# b5: VarAp.CvActief
-# b6: varAp.koelingActief
+  #280 - Appliance status 2
+  # b0: varAp.pomp
+  # b1: var3-wegklepOpen
+  # b2: var3-wegklep
+  # b3: var3-wegklepGesloten
+  # b4: VarAp.SwwActief
+  # b5: VarAp.CvActief
+  # b6: varAp.koelingActief
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varAppomp
-  name: "App Staus 2(b1): AP pomp"
-  register_type: holding
-  address: 280
-  bitmask: 0x01 #(bit 1)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varAppomp
+    name: "App Staus 2(b1): AP pomp"
+    register_type: holding
+    address: 280
+    bitmask: 0x01 #(bit 1)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: var3wegklepOpen
-  name: "App Staus 2(b2): 3-weg klep open"
-  register_type: holding
-  address: 280
-  bitmask: 0x02 #(bit 2)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: var3wegklepOpen
+    name: "App Staus 2(b2): 3-weg klep open"
+    register_type: holding
+    address: 280
+    bitmask: 0x02 #(bit 2)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: var3wegklep
-  name: "App Staus 2(b3): 3-weg klep"
-  register_type: holding
-  address: 280
-  bitmask: 0x04 #(bit 3)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: var3wegklep
+    name: "App Staus 2(b3): 3-weg klep"
+    register_type: holding
+    address: 280
+    bitmask: 0x04 #(bit 3)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: var3wegklepgesloten
-  name: "App Staus 2(b4): 3-weg klep gesloten"
-  register_type: holding
-  address: 280
-  bitmask: 0x08 #(bit 4)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: var3wegklepgesloten
+    name: "App Staus 2(b4): 3-weg klep gesloten"
+    register_type: holding
+    address: 280
+    bitmask: 0x08 #(bit 4)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: varSwwActief
-  name: "App Staus 2(b5): Sww Actief"
-  register_type: holding
-  address: 280
-  bitmask: 0x10 #(bit 5)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varSwwActief
+    name: "App Staus 2(b5): Sww Actief"
+    register_type: holding
+    address: 280
+    bitmask: 0x10 #(bit 5)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: CvActief
-  name: "App Staus 2(b6): Cv Actief"
-  register_type: holding
-  address: 280
-  bitmask: 0x20 #(bit 6)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: CvActief
+    name: "App Staus 2(b6): Cv Actief"
+    register_type: holding
+    address: 280
+    bitmask: 0x20 #(bit 6)
 
-- platform: modbus_controller
-  modbus_controller_id: ${name}
-  id: koelingActief
-  name: "App Staus 2(b7): koeling Actief"
-  register_type: holding
-  address: 280
-  bitmask: 0x40 #(bit 7)
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: koelingActief
+    name: "App Staus 2(b7): koeling Actief"
+    register_type: holding
+    address: 280
+    bitmask: 0x40 #(bit 7)
 
 
 text_sensor:
@@ -1225,12 +1320,3 @@ text_sensor:
 
 #   11 Buffertank address 7500 / 7606
 
-
-number:
-  - platform: modbus_controller
-    modbus_controller_id: ${name}
-    id: Num_TemperatureSetpoint
-    name: "Temperatuur setpoint"
-    address: 257
-    value_type: S_WORD
-    multiply: 100
