@@ -1,0 +1,1236 @@
+substitutions:
+  name: elga
+  device_description: "Esphome component for Remeha Elga Ace with GTW-08 modbus pcb extension"
+  ## Order GTW-08 PCB @ https://pumpen-heizung.de/Remeha-7721982-Schnittstelle-Modbus-RTU-Gateway-GTW-08
+  ## Dutch manual: https://tools.remeha.nl/wp-content/uploads/sites/3/2020/08/Lijst-van-parameters-voor-GTW08.pdf
+  friendly_name: Elga
+
+esphome:
+  name: ${name}
+#  friendly_name: ${friendly_name}
+  comment: Remeha Elga Ace warmtepomp
+
+
+#  RS485 base with Atom S3 lite
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+    version: latest
+
+# Enable/Disable logging
+logger:
+  logs:
+    modbus_controller.sensor: DEBUG
+    modbus_controller.output: DEBUG
+    modbus.number: DEBUG
+    esp32.preferences: DEBUG
+    sensor: DEBUG
+    text_sensor: DEBUG
+    button: DEBUG
+    number: DEBUG
+    component: ERROR
+
+# Enable Home Assistant API
+api:
+  reboot_timeout: 0s
+
+# Enable Over The Air updates  
+ota:
+#  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${friendly_name} Hotspot"
+    password: "configesp"
+    
+captive_portal:
+    
+web_server:
+  port: 80
+
+# i2c for extra sensor
+i2c:
+  - id: bus_a
+    sda: GPIO2
+    scl: GPIO1
+
+# uart for modbus rtu
+uart:
+  id: mod_bus
+  baud_rate: 9600
+  stop_bits: 1
+  parity: none
+  tx_pin: GPIO6
+  rx_pin: GPIO5
+
+modbus:
+  id: modbus1
+  send_wait_time: 200ms
+
+modbus_controller:
+  - id: ${name}
+    address: 100 # the Modbus device addr set by switch (see manual)
+    modbus_id: modbus1
+    setup_priority: -10
+    update_interval: 15s
+
+    
+sensor:
+# calculating COP thanks to JBtL @ tweakers.net
+# https://gathering.tweakers.net/forum/view_message/77172604  
+  - name: "PM power" 
+    platform: homeassistant
+    id: pm_warmtepomp_energy_power
+    entity_id: sensor.h_wp_power #id of your powermeter
+    internal: false
+    unit_of_measurement: 'W'
+    device_class: power
+    accuracy_decimals: 0
+    filters:
+      - timeout:
+          timeout: 2min
+          value: 0
+      - round: 0
+
+
+  - name: "COP"
+    platform: template
+    id: elgaCOP
+    internal: False
+    unit_of_measurement: "COP"
+    lambda: |-
+      if( id(pm_warmtepomp_energy_power).state >= 60 )
+      {  
+        float Deltat = id(Elga_Aanvoertempearatuur_WP).state - id(Elga_Retourtemperatuur_WP).state;
+        float FlowModified = id(varApFlowmeter).state + 1;
+        float warmte = Deltat * 69.766667 * FlowModified;
+        ESP_LOGD("lambda", "COP debug = Deltat: %f, FlowModified: %f, warmte: %f", Deltat, FlowModified, warmte);
+        return warmte / id(pm_warmtepomp_energy_power).state;
+      }
+      else
+      {
+        ESP_LOGD("lambda", "power lower than 60W, return 0");
+        return 0.0;
+      }
+      return 0.0;
+
+
+#   4 Apparaatinformatie GTW-08 address 1 / 11
+
+#   5 Systeemontdekking address 128 / 200
+
+  - name: "GTW08 DeviceTypeBoard" #Type apparaat dat zich bevindt op instance 1 (CUEHC, EEC, SCB,..)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: GTW08_DeviceTypeBoard
+    internal: false
+    register_type: read
+    address: 129
+    response_size: 2
+    value_type: U_WORD
+
+  - name: "GTW08 Softwareversie" #Softwareversie van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: GTW08_Softwareversie
+    internal: false
+    register_type: read
+    address: 130
+    response_size: 2
+    value_type: U_WORD
+
+  - name: "GTW08 DeviceConfigurationTableVersion" #Versie configuratietabel van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: GTW08_DeviceConfigurationTableVersion
+    internal: false
+    register_type: read
+    address: 131
+    response_size: 2
+    value_type: U_WORD
+
+  - name: "GTW08 HardwareVersion" #Hardwareversie van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..) 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: GTW08_HardwareVersion
+    internal: false
+    register_type: read
+    address: 132
+    response_size: 2
+    value_type: U_WORD
+
+#  - name: "GTW08 ArticleNumber1 32 25" #Artikelnummer van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..) 
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: GTW08_ArticleNumber1_32_25
+#    internal: false
+#    register_type: holding
+#    address: 133
+#    response_size: 2
+#    value_type: U_DWORD
+
+#  - name: "GTW08 ArticleNumber1 16 9" #Artikelnummer van apparaat dat zich bevindt op instance 1 (CU-EHC, EEC, SCB,..) 
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: GTW08_ArticleNumber1_16_9
+#    internal: false
+#    register_type: holding
+#    address: 134
+#    response_size: 2
+#    value_type: U_DWORD
+
+
+#   6 Bewaking hoofdregeling address 256 / 352
+
+#  - name: "Elga PowerSetpoint" #Vermogenssetpoint warmtevraag om naar het CUapparaat te sturen
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_PowerSetpoint
+#    internal: false
+#    register_type: read
+#    address: 256
+#    response_size: 2
+#    value_type: U_WORD
+#    accuracy_decimals: 1
+#    device_class: power
+#    filters:
+#      - multiply: 1
+#    unit_of_measurement: W
+
+#  - name: "Elga TemperatureSetpoint 8-1" #Temperatuursetpoint warmtevraag om naar het CUapparaat te sturen
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_TemperatureSetpoint_8_1
+#    internal: false
+#    register_type: read
+#    address: 257
+#    response_size: 1
+#    value_type: S_WORD
+#    accuracy_decimals: 1
+#    device_class: temperature
+#    filters:
+#      - multiply: 0.01
+#    unit_of_measurement: °C
+
+#  - name: "Elga AlgoritthmType" #Type regeling (0 : Beide; 1 : Vermogen; 2 : Temperatuur, 3 : Geen)
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_AlgoritthmType 
+#    internal: false
+#    register_type: holding
+#    address: 258
+#    response_size: 1
+#    value_type: S_WORD
+#    accuracy_decimals: 1
+
+#  - name: "Elga HeatDemandtype" #Type warmtevraag (0 : Geen; 7 : Verwarming; 8 : Koeling)
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_HeatDemandtype 
+#    internal: false
+#    register_type: holding
+#    address: 259
+#    response_size: 1
+#    value_type: S_WORD
+#    accuracy_decimals: 1
+
+  - name: "Elga PowerActualReceived" #Werkelijk uitgangsvermogen (totale werkelijke vermogen ontvangen van de aangesloten ketel)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_PowerActualReceived 
+    internal: false
+    register_type: read
+    address: 272
+    response_size: 2
+    value_type: U_WORD
+    accuracy_decimals: 1
+    device_class: power
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: kW
+
+  - name: "Elga Aanvoertempearatuur Combi" #FlowTemperatureReceived
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: FlowTemperatureReceived
+    internal: false
+    register_type: read
+    address: 273
+    response_size: 2
+    value_type: S_WORD
+    accuracy_decimals: 1
+    device_class: temperature
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga Retourtemperatuur" #ReturnTemperatureReceived
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: ReturnTemperatureReceived
+    internal: false
+    register_type: read
+    address: 274
+    response_size: 2
+    value_type: S_WORD
+    accuracy_decimals: 1
+    device_class: temperature
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+#  - name: "Elga ProducerManagerStatusBitfieldReceived" #0 Pomp actief, 1 Vermogen motor actief (brander, compressor of backup), 2 SWW in uitvoering, 3 CV mogelijk, 4 SWW mogelijk, 5 Koeling mogelijk, 6 Elektrisch mogelijk, 7 Vergrendeling aanwezig
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_ProducerManagerStatusBitfieldReceived
+#    internal: false
+#    register_type: holding
+#    address: 275
+#    response_size: 1
+#    value_type: S_WORD
+#    accuracy_decimals: 1
+
+#  - name: "Elga ProducerManagerRequestReceived" #0 Vorstbescherming, 1 Vorstbescherming alleen pomp, 2 Schoorsteen / inbedrijfstellingsmodus, 3 Aanvraag service
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_ProducerManagerRequestReceived
+#    internal: false
+#    register_type: holding
+#    address: 276
+#    response_size: 1
+#    value_type: S_WORD
+#    accuracy_decimals: 1
+
+  - name: "Elga Appliance Error 8-1" #0 Fout apparaatstroom (0xFFFF betekent geen stroom)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_Appliance_Error_8_1
+    internal: false
+    register_type: read
+    address: 277
+    response_size: 2
+    value_type: U_WORD
+
+
+#  - name: "Elga Appliance Error Priority" #0: Vergrendeling, 3: Blokkering, 6: Waarschuwing, 255: Geen fout
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_Appliance_Error_Priority
+#    internal: false
+#    register_type: holding
+#    address: 278
+#    response_size: 1
+#    value_type: S_WORD
+
+#  - name: "Elga Appliance status 1" #b0: varVlamAan, b1: varWarmtepompAan, b2: varElektrischeBack-upAan, b3: varElektrischeBack-up2Aan, b4: varSwwElektrischeBack-upAan, b5: varAp.serviceVereist, b6: varAp.voedingUitgeschakeldResetnodig, b7: varAp.waterdrukLaag
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_Appliance_status_1
+#    internal: false
+#    register_type: holding
+#    address: 279
+#    response_size: 1
+#    value_type: U_WORD
+
+  - name: "Elga varChCtrBurnerStarts" #Teller branderstarts 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varChCtrBurnerStarts
+    internal: false
+    register_type: read
+    address: 288
+    response_size: 2
+    value_type: U_DWORD
+
+
+  - name: "Elga varApCtrServiceBurningHours 8-1" #Aantal uren dat het apparaat actief was na servicebeurt 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrServiceBurningHours_8_1
+    internal: false
+    register_type: read
+    address: 292
+    response_size: 2
+    value_type: U_WORD
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: hours
+
+  - name: "Elga varApCtrServiceBurnerStarts 24-17" #Aantal succesvolle compressorstarts na servicebeurt 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrServiceBurnerStarts_24_17
+    internal: false
+    register_type: read
+    address: 293
+    response_size: 2
+    value_type: U_DWORD
+
+  - name: "Elga varApCtrBackup1Starts 24-17" #Teller starts backup1 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrBackup1Starts_24_17
+    internal: false
+    register_type: read
+    address: 295
+    response_size: 2
+    value_type: U_DWORD
+
+  - name: "Elga varApCtrHoursTotal 8-1" #Aantal uren dat apparaat actief was
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrHoursTotal_8_1
+    internal: false
+    register_type: read
+    address: 303
+    response_size: 2
+    value_type: U_DWORD
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: hours
+
+
+#   7 Apparaat address 384 / 503
+
+  - name: "Elga Buitentemperatuur" #varApTOutside
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varApTOutside
+    internal: false
+    register_type: read
+    address: 384
+    response_size: 2
+    value_type: S_WORD
+    accuracy_decimals: 1
+    device_class: temperature
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+#  - name: "Elga varApSeasonMode" #Seizoensmodus actief, 0: Winter, 1:Bescherming tegen vorst in de winter, 2:Zomer neutrale band, 3: Zomer
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_varApSeasonMode
+#    internal: false
+#    register_type: holding
+#    address: 385
+#    response_size: 1
+#    value_type: S_WORD
+#    accuracy_decimals: 1
+
+  - name: "Elga parApSummerWinter 8-1" #Buitentemperatuur: bovengrens voor verwarming (30,5 betekent uitgeschakeld)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_parApSummerWinter_8_1
+    internal: false
+    register_type: holding
+    address: 386
+    response_size: 2
+    value_type: U_WORD
+    accuracy_decimals: 2
+    device_class: temperature
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga parApNeutralBandSummerWinter 8-1" #Alleen gebruikt wanneer de generator koeling nodig heeft. Neutrale band waarbij de HP wordt gedeactiveerd
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_parApNeutralBandSummerWinter_8_1
+    internal: false
+    register_type: holding
+    address: 387
+    response_size: 2
+    value_type: U_WORD
+
+  - name: "Elga parApFrostMinToutside 8 -1" #Buitentemperatuur waaronder de antivriesbescherming wordt geactiveerd
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_parApFrostMinToutside_8_1
+    internal: false
+    register_type: holding
+    address: 388
+    response_size: 2
+    value_type: S_WORD
+    accuracy_decimals: 2
+    device_class: temperature
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+#  - name: "Elga parApForceSummerMode" #De verwarming is gestopt. Heet water wordt gehandhaafd. Forceer zomerstand, 0: Off, 1: On
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_parApForceSummerMode
+#    internal: false
+#    register_type: holding
+#    address: 389
+#    response_size: 1
+#    value_type: S_WORD
+
+  - name: "Elga varApTflow" #Stromingstemperatuur
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApTflow
+    internal: false
+    register_type: read
+    address: 400
+    response_size: 2
+    value_type: S_WORD
+    device_class: temperature
+    accuracy_decimals: 2
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga varApTreturn" #Retourtemperatuur
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApTreturn
+    internal: false
+    register_type: holding
+    address: 401
+    response_size: 1
+    value_type: S_WORD
+    device_class: temperature
+    accuracy_decimals: 2
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga Aanvoertempearatuur WP" #remeha_varHpHeatPumpTF - Stromingstemperatuur verwarmingspomp
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_Aanvoertempearatuur_WP
+    internal: false
+    register_type: holding
+    address: 403
+    response_size: 2
+    value_type: S_WORD
+    device_class: temperature
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga Retourtemperatuur WP" #varHpHeatPumpTR 8 -1 - Retourtemperatuur verwarmingspomp
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_Retourtemperatuur_WP
+    internal: false
+    register_type: holding
+    address: 404
+    response_size: 2
+    value_type: S_WORD
+    device_class: temperature
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga varApInternalSetpoint" #Intern setpoint voor warmwaterproductie
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApInternalSetpoint
+    internal: false
+    register_type: holding
+    address: 405
+    response_size: 2
+    value_type: U_WORD
+    device_class: temperature
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga Waterdruk" #ApWaterPressure
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: ApWaterPressure
+    internal: false
+    register_type: read
+    address: 409
+    response_size: 1
+    value_type: U_WORD
+    accuracy_decimals: 1
+    device_class: pressure
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: bar
+
+  - name: "Elga Waterdoorstroming" #varApFlowmeter
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varApFlowmeter
+    internal: false
+    register_type: holding
+    address: 410
+    response_size: 2
+    value_type: U_WORD
+    accuracy_decimals: 1
+    device_class: water
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: "l/min"
+
+  - name: "Elga varApStatus" #Status van apparaat 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApStatus 
+    internal: false
+    register_type: holding
+    address: 411
+    response_size: 2
+    value_type: S_WORD
+
+  - name: "Elga varApSubStatus" #Substatus van apparaat
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_arApSubStatus
+    internal: false
+    register_type: holding
+    address: 412
+    response_size: 2
+    value_type: S_WORD
+
+  - name: "Elga varApPowerActual" #Werkelijk geproduceerd relatief vermogen
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApPowerActual
+    internal: false
+    register_type: read
+    address: 413
+    response_size: 2
+    value_type: U_WORD
+    filters:
+    - calibrate_linear:
+        method: least_squares
+        datapoints:
+        # Map 0.0 (from sensor) to 1.0 (true value)
+        - 0.0 -> 0
+        - 65535 -> 100
+    unit_of_measurement: "%"
+
+  - name: "Elga varHePowerSetpoint" #Vermogenssetpoint in % van max
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varHePowerSetpoint
+    internal: false
+    register_type: read
+    address: 414
+    response_size: 2
+    value_type: U_WORD
+    filters:
+    - calibrate_linear:
+        method: least_squares
+        datapoints:
+        # Map 0.0 (from sensor) to 1.0 (true value)
+        - 0.0 -> 0
+        - 65535 -> 100
+    unit_of_measurement: "%"
+
+  - name: "Elga Energieverbruik totaal" #varApChEnergyConsumption
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varApChEnergyConsumption
+    internal: false
+    register_type: read
+    address: 433
+    response_size: 2
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    device_class: energy
+    filters:
+      - multiply: 1
+    unit_of_measurement: kWh
+
+
+#   8 Service address 512 / 551
+
+#  - name: "Elga varApServiceRequired" #Service is vereist, 0:NEE, 1:JA
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_varApServiceRequired
+#    internal: false
+#    register_type: holding
+#    address: 512
+#    response_size: 1
+#    value_type: S_DWORD
+
+#  - name: "Elga varApCurrentOrUpcomingServiceNotification" #Huidige of aanstaande servicemelding 1=A, 2=B, 3=C, 4=Aangepast
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_varApCurrentOrUpcomingServiceNotification
+#    internal: false
+#    register_type: holding
+#    address: 513
+#    response_size: 1
+#    value_type: S_DWORD
+
+  - name: "Elga varApCtrServiceBurningHours" #Aantal uren dat het apparaat actief was na servicebeurt
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrServiceBurningHours
+    internal: false
+    register_type: read
+    address: 514
+    response_size: 2
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: h
+
+  - name: "Elga varApCtrServiceOperatingHours" #Aantal uren sinds de vorige servicebeurt van het apparaat
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrServiceOperatingHours
+    internal: false
+    register_type: read
+    address: 515
+    response_size: 2
+    value_type: U_WORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: h
+
+  - name: "Elga varApCtrServiceBurnerStarts" #Aantal succesvolle compressorstarts na servicebeurt
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApCtrServiceBurnerStarts
+    internal: false
+    register_type: read
+    address: 516
+    response_size: 2
+    value_type: U_DWORD
+
+  - name: "Elga varApplianceOnError" #Fout aanwezig op het apparaat 
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varApplianceOnError
+    internal: false
+    register_type: holding
+    address: 531
+    response_size: 1
+    value_type: S_DWORD
+
+  - name: "Elga varACurrentError1" #Codefout van het apparaat op instance 1 (CUEHC, EEC, SCB,..)
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varACurrentError1
+    internal: false
+    register_type: read
+    address: 532
+    response_size: 2
+    value_type: U_WORD
+
+#  - name: "Elga ErroPriority1" #Ernst van de fout van het apparaat op instance 1, 0 : Vergrendeling, 3 : Blokkering, 6 : Waarschuwing
+#    platform: modbus_controller
+#    modbus_controller_id: ${name}
+#    id: Elga_ErroPriority1
+#    internal: false
+#    register_type: holding
+#    address: 533
+#    response_size: 1
+#    value_type: S_DWORD
+
+
+#   9 Zones (max. 12 zones) address 640 / 1120
+
+  - name: "Elga parZoneMaxPreHeatTime" #Maximale voorverwarmingstijd
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_parZoneMaxPreHeatTime
+    internal: false
+    register_type: holding
+    address: 677
+    response_size: 2
+    value_type: U_WORD
+    device_class: timestamp
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: min
+
+  - name: "Elga Aanvoertemperatuur setpoint" #varZoneTemperatureSetpoint
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varZoneTemperatureSetpoint
+    internal: false
+    register_type: read
+    address: 1101
+    response_size: 2
+    value_type: U_WORD
+    accuracy_decimals: 1
+    device_class: temperature
+    filters:
+      - multiply: 0.01
+    unit_of_measurement: °C
+
+  - name: "Elga Ruimtesetpoint" #remeha_varZoneTRoomSetpoint
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varZoneTRoomSetpoint
+    internal: false
+    register_type: read
+    address: 1102
+    response_size: 2
+    value_type: S_WORD
+    accuracy_decimals: 1
+    device_class: temperature
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: °C
+
+  - name: "Elga Ruimtetemperatuur" #varZoneTRoom
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varZoneTRoom
+    internal: false
+    register_type: read
+    address: 1104
+    response_size: 2
+    value_type: S_WORD
+    device_class: temperature
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+    unit_of_measurement: °C
+
+  - name: "Elga varZoneHdOnOffDemand" #Warmtevraag actief, aan/uit, 0 : UIT, 1: AAN
+    platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Elga_varZoneHdOnOffDemand
+    internal: false
+    register_type: holding
+    address: 1106
+    response_size: 1
+    value_type: S_DWORD
+
+
+#   10 Cascade address 7000 / 7146
+
+#   11 Buffertank address 7500 / 7606
+
+
+binary_sensor:
+
+#appliance status 1: 279
+# b0: varVlamAan
+# b1: varWarmtepompAan
+# b2: varElektrischeBack-upAan
+# b3: varElektrischeBack-up2Aan
+# b4: varSwwElektrischeBack-upAan
+# b5: varAp.serviceVereist
+# b6: varAp.voedingUitgeschakeldResetnodig
+# b7: varAp.waterdrukLaag
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varVlamAan
+  name: "App Staus 1(b0): VlamAan"
+  register_type: holding
+  address: 279
+  bitmask: 0x00 #(bit 0)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varWarmtepompAan
+  name: "App Staus 1(b1): WarmtePomp"
+  register_type: holding
+  address: 279
+  bitmask: 0x01 #(bit 1)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varElektrischeBackupAan
+  name: "App Staus 1(b2): backup1"
+  register_type: holding
+  address: 279
+  bitmask: 0x02 #(bit 2)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varElektrischeBackup2Aan
+  name: "App Staus 1(b3): backup2"
+  register_type: holding
+  address: 279
+  bitmask: 0x04 #(bit 3)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varSwwElektrischeBack
+  name: "App Staus 1(b4): SwwElektrischeBackup"
+  register_type: holding
+  address: 279
+  bitmask: 0x08 #(bit 4)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: serviceVereist
+  name: "App Staus 1(b5): Service vereist"
+  register_type: holding
+  address: 279
+  bitmask: 0x10 #(bit 5)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: voedingUitgeschakeldResetnodig
+  name: "App Staus 1(b6): voedingUitgeschakeldResetnodig"
+  register_type: holding
+  address: 279
+  bitmask: 0x20 #(bit 6)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: waterdrukLaag
+  name: "App Staus 1(b7): waterdrukLaag"
+  register_type: holding
+  address: 279
+  bitmask: 0x40 #(bit 7)
+
+#280 - Appliance status 2
+# b0: varAp.pomp
+# b1: var3-wegklepOpen
+# b2: var3-wegklep
+# b3: var3-wegklepGesloten
+# b4: VarAp.SwwActief
+# b5: VarAp.CvActief
+# b6: varAp.koelingActief
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varAppomp
+  name: "App Staus 2(b1): AP pomp"
+  register_type: holding
+  address: 280
+  bitmask: 0x01 #(bit 1)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: var3wegklepOpen
+  name: "App Staus 2(b2): 3-weg klep open"
+  register_type: holding
+  address: 280
+  bitmask: 0x02 #(bit 2)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: var3wegklep
+  name: "App Staus 2(b3): 3-weg klep"
+  register_type: holding
+  address: 280
+  bitmask: 0x04 #(bit 3)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: var3wegklepgesloten
+  name: "App Staus 2(b4): 3-weg klep gesloten"
+  register_type: holding
+  address: 280
+  bitmask: 0x08 #(bit 4)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: varSwwActief
+  name: "App Staus 2(b5): Sww Actief"
+  register_type: holding
+  address: 280
+  bitmask: 0x10 #(bit 5)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: CvActief
+  name: "App Staus 2(b6): Cv Actief"
+  register_type: holding
+  address: 280
+  bitmask: 0x20 #(bit 6)
+
+- platform: modbus_controller
+  modbus_controller_id: ${name}
+  id: koelingActief
+  name: "App Staus 2(b7): koeling Actief"
+  register_type: holding
+  address: 280
+  bitmask: 0x40 #(bit 7)
+
+
+text_sensor:
+
+#   4 Apparaatinformatie GTW-08 address 1 / 11
+
+#   5 Systeemontdekking address 128 / 200
+
+#   6 Bewaking hoofdregeling address 256 / 352
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: txtAlgorithType
+    register_type: holding
+    address: 258
+    raw_encode: NONE
+    response_size: 2
+    name: "Type regeling" 
+    lambda: |-
+      //uint8_t value
+      uint8_t value = data[1]; // or data[1], depending on, if the device use big, or little-endian
+      switch (value) {
+        case 0: return std::string("Beide");
+        case 1: return std::string("Vermogen");
+        case 2: return std::string("Temperatuur");
+        case 3: return std::string("geen");
+        default: return std::string("[0]:" + std::to_string(data[0]) + " [1]:"  + std::to_string(data[1]));
+      }
+      return x;
+
+#   name: "Elga ProducerManagerStatusBitfieldReceived" #0 Pomp actief, 1 Vermogen motor actief (brander, compressor of backup), 2 SWW in uitvoering, 3 CV mogelijk, 4 SWW mogelijk, 5 Koeling mogelijk, 6 Elektrisch mogelijk, 7 Vergrendeling aanwezig
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: ProducerManagerStatusBitfieldReceived
+    register_type: holding
+    address: 275
+    raw_encode: NONE
+    response_size: 2
+    name: "Producer Manager Status Bitfield Received" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 0: return std::string("Pomp actief");
+        case 1: return std::string("Vermogen motor actief (brander, compressor of backup)");
+        case 2: return std::string("SWW in uitvoering");
+        case 3: return std::string("CV mogelijk");
+        case 4: return std::string("SWW mogelijk");
+        case 5: return std::string("Koeling mogelijk");
+        case 6: return std::string("Elektrisch mogelijk");
+        case 7: return std::string("Vergrendeling aanwezig");
+        default: return std::to_string(value);
+      }
+      return x;
+
+#   name: "Elga ProducerManagerRequestReceived" #0 Vorstbescherming, 1 Vorstbescherming alleen pomp, 2 Schoorsteen / inbedrijfstellingsmodus, 3 Aanvraag service
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: ProducerManagerRequestReceived
+    register_type: holding
+    address: 276
+    raw_encode: NONE
+    response_size: 2
+    name: "Producer Manager Request Received" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 0: return std::string("Vorstbescherming");
+        case 1: return std::string("Vorstbescherming alleen pomp");
+        case 2: return std::string("Schoorsteen / inbedrijfstellingsmodus");
+        case 3: return std::string("Aanvraag service");
+        default: return std::to_string(value);
+      }
+      return x;
+
+#   name: "Elga Appliance Error Priority" #0: Vergrendeling, 3: Blokkering, 6: Waarschuwing, 255: Geen fout
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: ApplianceErrorPriority
+    register_type: holding
+    address: 278
+    raw_encode: NONE
+    response_size: 2
+    name: "Appliance Error Priority" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 0: return std::string("Vergrendeling");
+        case 3: return std::string("Blokkering");
+        case 6: return std::string("Waarschuwing");
+        case 255: return std::string("Geen fout");
+        default: return std::to_string(value);
+      }
+      return x;
+
+#   7 Apparaat address 384 / 503
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varApSeasonMode
+    register_type: holding
+    address: 385
+    response_size: 2
+    raw_encode: NONE
+    name: "Seizoensmodus actief" 
+    lambda: |-
+      //uint8_t value
+      uint8_t value = data[1]; // or data[1], depending on, if the device use big, or little-endian
+      switch (value) {
+        case 0: return std::string("Winter");
+        case 1: return std::string("Vorst");
+        case 2: return std::string("ZomerNeutraalBand");
+        case 3: return std::string("zomer");
+        default: return std::string("[0]:" + std::to_string(data[0]) + " [1]:"  + std::to_string(data[1]));
+      }
+      return x;
+
+#   name: "Elga parApForceSummerMode" #De verwarming is gestopt. Heet water wordt gehandhaafd. Forceer zomerstand, 0: Off, 1: On
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: parApForceSummerMode
+    register_type: holding
+    address: 389
+    response_size: 2
+    raw_encode: NONE
+    name: "parApForceSummerMode" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 0: return std::string("Off");
+        case 1: return std::string("On");
+        default: return std::to_string(value);
+      }
+      return x;
+
+
+#   8 Service address 512 / 551
+
+#   name: "Elga varApServiceRequired" #Service is vereist, 0:NEE, 1:JA
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varApServiceRequired
+    register_type: holding
+    address: 512
+    response_size: 2
+    raw_encode: NONE
+    name: "varApServiceRequired" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 0: return std::string("NEE");
+        case 1: return std::string("JA");
+        default: return std::to_string(value);
+      }
+      return x;
+
+#   name: "Elga varApCurrentOrUpcomingServiceNotification" #Huidige of aanstaande servicemelding 1=A, 2=B, 3=C, 4=Aangepast
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: varApCurrentOrUpcomingServiceNotification
+    register_type: holding
+    address: 513
+    response_size: 2
+    raw_encode: NONE
+    name: "varApCurrentOrUpcomingServiceNotification" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 1: return std::string("1=A");
+        case 2: return std::string("2=B");
+        case 3: return std::string("3=c");
+        case 4: return std::string("4=C");
+        default: return std::to_string(value);
+      }
+      return x;
+
+#   name: "Elga ErroPriority1" #Ernst van de fout van het apparaat op instance 1, 0 : Vergrendeling, 3 : Blokkering, 6 : Waarschuwing
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: ErroPriority1
+    register_type: holding
+    address: 533
+    response_size: 2
+    raw_encode: NONE
+    name: "ErroPriority1" 
+    lambda: |-
+      uint8_t value = data[0];
+      switch (value) {
+        case 0: return std::string("Vergrendeling");
+        case 1: return std::string("Ernst van de fout van het apparaat op instance 1");
+        case 3: return std::string("Blokkering");
+        case 6: return std::string("Waarschuwing");
+        default: return std::to_string(value);
+      }
+      return x;
+
+
+#   9 Zones (max. 12 zones) address 640 / 1120
+
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: HeatingMode
+    register_type: holding
+    address: 1109
+    raw_encode: NONE
+    name: "Type warmtevraag (Zone)" 
+    lambda: |-
+      uint8_t value = data[1];
+      switch (value) {
+        case 0: return std::string("Geen");
+        case 1: return std::string("Verwarming");
+        case 2: return std::string("Koeling");
+        default: return std::string("[0]:" + std::to_string(data[0]) + " [1]:"  + std::to_string(data[1]));
+      }
+      return x;
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Zone1Type
+    register_type: holding
+    address: 1109
+    raw_encode: NONE
+    name: "Zone1 type" 
+    lambda: |-
+      uint8_t value = data[1];
+      switch (value) {
+        case 0: return std::string("Niet aanwezig");
+        case 1: return std::string("Alleen CV");
+        case 2: return std::string("CV + KOELING");
+        case 3: return std::string("SWW");
+        case 4: return std::string("Processwarmte");
+        case 5: return std::string("Zwembad");
+        case 254: return std::string("overige");
+        default: return std::string("[0]:" + std::to_string(data[0]) + " [1]:"  + std::to_string(data[1]));
+      }
+      return x;
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: parZone1Function
+    register_type: holding
+    address: 1109
+    raw_encode: NONE
+    name: "Zone1 Function" 
+    lambda: |-
+      uint8_t value = data[1];
+      switch (value) {
+        case 0: return std::string("Uitgeschakeld");
+        case 1: return std::string("Direct");
+        case 2: return std::string("Mengcircuit");
+        case 3: return std::string("Zwembad");
+        case 4: return std::string("Hoge temperatuur");
+        case 5: return std::string("Ventilatorconvector");
+        case 6: return std::string("SWW-tank");
+        case 7: return std::string("Elektrische SWWtank");
+        case 8: return std::string("Tijdprogramma");
+        case 9: return std::string("Proceswarmte");
+        case 254: return std::string("overige");
+        default: return std::string("[0]:" + std::to_string(data[0]) + " [1]:"  + std::to_string(data[1]));
+      }
+      return x;
+
+    
+#   10 Cascade address 7000 / 7146
+
+#   11 Buffertank address 7500 / 7606
+
+
+number:
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: Num_TemperatureSetpoint
+    name: "Temperatuur setpoint"
+    address: 257
+    value_type: S_WORD
+    multiply: 100
