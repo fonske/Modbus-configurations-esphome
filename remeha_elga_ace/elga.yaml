@@ -35,13 +35,16 @@ logger:
     sensor: WARN
     text_sensor: WARN
     number: WARN 
+    component: ERROR
 
 # Enable Home Assistant API
 api:
   reboot_timeout: 0s
 
-# Enable Over The Air updates  
+#update for esphome 2024.6.0
+# OTA:
 ota:
+  platform: esphome
 #  password: !secret ota_password
 
 wifi:

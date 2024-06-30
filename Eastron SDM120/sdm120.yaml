@@ -30,8 +30,10 @@ logger:
 api:
   reboot_timeout: 0s
 
-# Enable Over The Air updates  
+#update for esphome 2024.6.0
+# OTA:
 ota:
+  platform: esphome
 #  password: !secret ota_password
 
 wifi:
