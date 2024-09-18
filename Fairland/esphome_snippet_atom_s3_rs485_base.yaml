@@ -19,21 +19,17 @@ api:
 ota:
   - platform: esphome
   
-# dashboard_import:
-#   package_import_url: https://github.com/fonske/Brink-flair-modbus
-
 # Sync time
 time:
   - platform: sntp
-    id: brink_sntp_time
+    id: sntp_time
     timezone: ${timezone}
     on_time_sync:
       then:
         - logger.log: "Synchronized sntp clock"
 ###
-## M5Stack atom S3 lite board powered by 12VDC/GND connection to 24VDC/GND from Brink, in combination with this base from m5stack:
+## M5Stack atom S3 lite board powered by 12VDC/GND connection to 12VDC/GND from Fairland and JST-XH 4pin connector, in combination with this base from m5stack:
 ## https://shop.m5stack.com/products/atomic-rs485-base
-## NOTE: there are other RS485 boards from m5stack, these are not tested (like the tail-rs485)
 #
 esp32:
   board: esp32-s3-devkitc-1
