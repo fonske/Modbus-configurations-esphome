@@ -1,0 +1,56 @@
+number:
+    ## Set led brightness
+  - platform: template
+    id: led_brightness
+    name: LED brightness
+    icon: mdi:toggle-switch-variant
+    mode: slider
+    entity_category: config
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    step: 10
+    initial_value: 70
+    restore_value: yes
+    unit_of_measurement: "%"
+    on_value:
+      then:
+        - if:
+            condition:
+              - light.is_on: led
+            then:
+            - light.turn_on:
+                id: led
+                brightness: !lambda |-
+                  // output value must be in range 0 - 1.0
+                  return id(led_brightness).state / 100.0;
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: num_temperatuur_setpoint
+    name: Temperatuur setpoint
+    device_class: temperature
+    unit_of_measurement: "°C"
+    address: 257
+    value_type: S_WORD
+    multiply: 100
+    min_value: 0
+    max_value: 60
+    step: 0.5
+    mode: slider
+    icon: mdi:thermometer
+
+  - platform: modbus_controller
+    modbus_controller_id: ${name}
+    id: num_temperatuur_bivalent
+    name: Bivalente temperatuur 
+    device_class: temperature
+    unit_of_measurement: "°C"
+    address: 487
+    value_type: S_WORD
+    multiply: 100
+    min_value: 0
+    max_value: 60
+    step: 0.5
+    mode: slider
+    icon: mdi:thermometer
