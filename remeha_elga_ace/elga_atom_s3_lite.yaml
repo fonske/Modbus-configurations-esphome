@@ -16,12 +16,16 @@ esphome:
       - switch.turn_off:
           id: led_switch
 
+## local options
+packages:
+  elga_numbers: !include numbers.yml         ## required
+
 #  RS485 base with Atom S3 lite
 esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
-    version: latest
+#    version: latest
 
 # Enable/Disable logging
 logger:
@@ -100,14 +104,6 @@ light:
     chipset: ws2812
     restore_mode: ALWAYS_ON  #OFF?
 
-
-
-###  ESP restart button
-button:
-  - platform: restart
-    id: restart_button
-    name: Restart button
-
 number:
     ## Set led brightness
   - platform: template
@@ -134,14 +130,12 @@ number:
                 brightness: !lambda |-
                   // output value must be in range 0 - 1.0
                   return id(led_brightness).state / 100.0;
-
-  - platform: modbus_controller
-    modbus_controller_id: ${name}
-    id: Num_TemperatureSetpoint
-    name: "Temperatuur setpoint"
-    address: 257
-    value_type: S_WORD
-    multiply: 100
+                  
+###  ESP restart button
+button:
+  - platform: restart
+    id: restart_button
+    name: Restart button
 
 switch:
   - platform: template
