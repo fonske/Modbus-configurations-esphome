@@ -18,7 +18,7 @@ esphome:
 
 ## local options
 packages:
-  elga_numbers: !include numbers.yml         ## required
+  elga_numbers: !include packages/numbers.yaml         ## required
 
 #  RS485 base with Atom S3 lite
 esp32:
