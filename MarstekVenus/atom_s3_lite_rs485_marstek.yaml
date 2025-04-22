@@ -1,13 +1,14 @@
 esphome:
-  name: atom_rs485
-  friendly_name: Atom RS485
+  name: marstek_m1
+  friendly_name: MT1
   min_version: 2024.11.0
   name_add_mac_suffix: false
 
 esp32:
   board: esp32-s3-devkitc-1
+  variant: esp32s3
   framework:
-    type: arduino
+    type: esp-idf
 
 # Enable/Disable logging
 logger:
@@ -38,7 +39,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Marstek Atom Fallback Hotspot"
+    ssid: "MT1 Fallback Hotspot"
     password: "configesp"
 
 web_server:
@@ -66,9 +67,61 @@ modbus_controller:
     command_throttle: 200ms
     update_interval: 5s
 
+#G4=IR
+remote_transmitter:
+  pin: GPIO4
+  carrier_duty_percent: 50%
+
+##font:
+##  - file: "gfonts://Roboto"
+##    id: font_default
+##    size: 32
+
+##time:
+##  platform: homeassistant
+##  id: ha_time
+
+##spi:
+##  clk_pin: 17
+##  mosi_pin: 21
+
+##display:
+##  - platform: st7789v
+##    id: display_tft
+##    model: Custom
+##    height: 128
+##    width: 128
+##    rotation: 180
+##    offset_height: 2
+##    offset_width: 1
+##    backlight_pin: 16
+##    cs_pin: 15
+##    dc_pin: 33
+##    reset_pin: 34
+##    eightbitcolor: true
+##    update_interval: 1s
+##    lambda: |-
+##      it.strftime(64, 0, id(font_default), TextAlign::TOP_CENTER, "%l:%M %p", id(ha_time).now());
+
+
+#output:
+#  - platform: ledc
+#    pin: 16
+#    min_power: 0.65
+#    max_power: 0.99
+#    zero_means_zero: true
+#    id: backlightdim
+
+#light:
+#  - platform: monochromatic
+#    output: backlightdim
+#    restore_mode: RESTORE_DEFAULT_ON
+#    name: "Backlight"
+#   id: backlightlight
+
 # Tekstsensoren
 text_sensor:
-  - name: "Marstek Device Name"
+  - name: "Device Name"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -77,7 +130,7 @@ text_sensor:
     response_size: 20
     skip_updates: 60 # 5 minutes
 
-  # - name: "Marstek SN Code"
+  # - name: "SN Code"
   #   platform: modbus_controller
   #   modbus_controller_id: mt
   #   register_type: holding
@@ -87,7 +140,7 @@ text_sensor:
   #   skip_updates: 60 # 5 minutes
 
   - platform: template
-    name: "Marstek Inverter State"
+    name: "Inverter State"
     lambda: |-
       switch (int(id(inverter_state).state)) {
         case 0: return std::string("Sleep");
@@ -103,7 +156,7 @@ text_sensor:
 # Binaire sensoren
 binary_sensor:
   - platform: modbus_controller
-    name: "Marstek PLL Abnormal Restart"
+    name: "PLL Abnormal Restart"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
@@ -111,7 +164,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Overtemperature Limit"
+    name: "Overtemperature Limit"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
@@ -119,7 +172,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Low Temperature Limit"
+    name: "Low Temperature Limit"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
@@ -127,7 +180,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Fan Abnormal Warning"
+    name: "Fan Abnormal Warning"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
@@ -135,31 +188,31 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Low Battery SOC Warning"
+    name: "Low Battery SOC Warning"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
-    bitmask: 0x16
+    bitmask: 0x10
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Output Overcurrent Warning"
+    name: "Output Overcurrent Warning"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
-    bitmask: 0x32
+    bitmask: 0x20
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Abnormal Line Sequence Detection"
+    name: "Abnormal Line Sequence Detection"
     modbus_controller_id: mt
     register_type: holding
     address: 36000
-    bitmask: 0x64
+    bitmask: 0x40
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Wifi Abnormal"
+    name: "Wifi Abnormal"
     modbus_controller_id: mt
     register_type: holding
     address: 36001
@@ -167,7 +220,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BLE abnormal"
+    name: "BLE abnormal"
     modbus_controller_id: mt
     register_type: holding
     address: 36001
@@ -175,7 +228,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Network abnormal"
+    name: "Network abnormal"
     modbus_controller_id: mt
     register_type: holding
     address: 36001
@@ -183,7 +236,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek CT connection abnormal"
+    name: "CT connection abnormal"
     modbus_controller_id: mt
     register_type: holding
     address: 36001
@@ -191,7 +244,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Grid overvoltage"
+    name: "Grid overvoltage"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
@@ -199,7 +252,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Grid undervoltage"
+    name: "Grid undervoltage"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
@@ -207,7 +260,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Grid overfrequency"
+    name: "Grid overfrequency"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
@@ -215,7 +268,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Grid underfrequency"
+    name: "Grid underfrequency"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
@@ -223,31 +276,31 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Grid peak voltage abnormal"
+    name: "Grid peak voltage abnormal"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
-    bitmask: 0x16
+    bitmask: 0x10
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Current Dcover"
+    name: "Current Dcover"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
-    bitmask: 0x32
+    bitmask: 0x20
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek Voltage Dcover"
+    name: "Voltage Dcover"
     modbus_controller_id: mt
     register_type: holding
     address: 36100
-    bitmask: 0x64
+    bitmask: 0x40
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BAT overvoltage"
+    name: "BAT overvoltage"
     modbus_controller_id: mt
     register_type: holding
     address: 36101
@@ -255,7 +308,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BAT undervoltage"
+    name: "BAT undervoltage"
     modbus_controller_id: mt
     register_type: holding
     address: 36101
@@ -263,7 +316,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BAT overcurrent"
+    name: "BAT overcurrent"
     modbus_controller_id: mt
     register_type: holding
     address: 36101
@@ -271,7 +324,7 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BAT low SOC"
+    name: "BAT low SOC"
     modbus_controller_id: mt
     register_type: holding
     address: 36101
@@ -279,19 +332,19 @@ binary_sensor:
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BAT communication failure"
+    name: "BAT communication failure"
     modbus_controller_id: mt
     register_type: holding
     address: 36101
-    bitmask: 0x16
+    bitmask: 0x10
     skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
-    name: "Marstek BMS protect"
+    name: "BMS protect"
     modbus_controller_id: mt
     register_type: holding
     address: 36101
-    bitmask: 0x32
+    bitmask: 0x20
     skip_updates: 6 # 30 seconds
 
   - platform: status
@@ -308,7 +361,7 @@ sensor:
     value_type: U_WORD
     internal: true # Hides from Home Assistant
 
-  - name: "Marstek Firmware Version"
+  - name: "Firmware Version"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -317,7 +370,7 @@ sensor:
     accuracy_decimals: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Battery Voltage (Average)"
+  - name: "Battery Voltage (Average)"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -331,7 +384,7 @@ sensor:
       - multiply: 0.01
     skip_updates: 60 # 5 minutes
     
-  - name: "Marstek Battery Current (Average)"
+  - name: "Battery Current (Average)"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -344,7 +397,7 @@ sensor:
     filters:
       - multiply: 0.01
 
-  - name: "Marstek Battery Power"
+  - name: "Battery Power"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -356,7 +409,7 @@ sensor:
     accuracy_decimals: 0
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek Battery State Of Charge"
+  - name: "Battery State Of Charge"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -367,7 +420,7 @@ sensor:
     id: marstek_soc
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Battery Total Energy"
+  - name: "Battery Total Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -381,7 +434,7 @@ sensor:
     skip_updates: 60 # 5 minutes
 
   - platform: template
-    name: "Marstek Battery Remaining Capacity"
+    name: "Battery Remaining Capacity"
     unit_of_measurement: "kWh"
     accuracy_decimals: 2
     update_interval: 300s
@@ -393,7 +446,7 @@ sensor:
       }
       return NAN;
 
-  - name: "Marstek AC Voltage"
+  - name: "AC Voltage"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -407,7 +460,7 @@ sensor:
       - multiply: 0.1
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek AC Current"
+  - name: "AC Current"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -420,7 +473,7 @@ sensor:
     filters:
       - multiply: 0.01
 
-  - name: "Marstek AC Power"
+  - name: "AC Power"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -432,7 +485,7 @@ sensor:
     accuracy_decimals: 0
     skip_updates: 2 # 10 seconds
 
-#  - name: "Marstek AC Offgrid Voltage"
+#  - name: "AC Offgrid Voltage"
 #    platform: modbus_controller
 #    modbus_controller_id: mt
 #    register_type: holding
@@ -445,7 +498,7 @@ sensor:
 #      - multiply: 0.1
 #    skip_updates: 60 # 5 minutes
 
-#  - name: "Marstek AC Offgrid Current"
+#  - name: "AC Offgrid Current"
 #    platform: modbus_controller
 #    modbus_controller_id: mt
 #    register_type: holding
@@ -457,7 +510,7 @@ sensor:
 #    filters:
 #      - multiply: 0.01
 
-#  - name: "Marstek AC Offgrid Power"
+#  - name: "AC Offgrid Power"
 #    platform: modbus_controller
 #    modbus_controller_id: mt
 #    register_type: holding
@@ -468,7 +521,7 @@ sensor:
 #    state_class: measurement
 #    accuracy_decimals: 0
 
-  - name: "Marstek Total Charging Energy"
+  - name: "Total Charging Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -483,7 +536,7 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Total Discharging Energy"
+  - name: "Total Discharging Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -498,7 +551,7 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Daily Charging Energy"
+  - name: "Daily Charging Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -513,7 +566,7 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Daily Discharging Energy"
+  - name: "Daily Discharging Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -528,7 +581,7 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Monthly Charging Energy"
+  - name: "Monthly Charging Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -543,7 +596,7 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Monthly Discharging Energy"
+  - name: "Monthly Discharging Energy"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -558,7 +611,7 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Internal Temperature"
+  - name: "Internal Temperature"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -572,7 +625,7 @@ sensor:
       - multiply: 0.1
     skip_updates: 60 # 5 minutes
 
-  - name: "Marstek Internal MOS1 Temperature"
+  - name: "Internal MOS1 Temperature"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -586,7 +639,7 @@ sensor:
     filters:
       - multiply: 0.1
    
-  - name: "Marstek Internal MOS2 Temperature"
+  - name: "Internal MOS2 Temperature"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -600,7 +653,7 @@ sensor:
     filters:
       - multiply: 0.1
 
-  - name: "Marstek Max. Cell Temperature"
+  - name: "Max. Cell Temperature"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -614,7 +667,7 @@ sensor:
     filters:
       - multiply: 0.1
     
-  - name: "Marstek Min. Cell Temperature"
+  - name: "Min. Cell Temperature"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -628,7 +681,7 @@ sensor:
     filters:
       - multiply: 0.1
     
-  - name: "Marstek Battery Charge Voltage Limit"
+  - name: "Battery Charge Voltage Limit"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -642,7 +695,7 @@ sensor:
     filters:
       - multiply: 0.01
 
-  - name: "Marstek Battery Charge Current Limit"
+  - name: "Battery Charge Current Limit"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -656,7 +709,7 @@ sensor:
     filters:
       - multiply: 0.01
 
-  - name: "Marstek Battery Discharge Current Limit"
+  - name: "Battery Discharge Current Limit"
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -687,7 +740,7 @@ sensor:
 
 # Instellingen en modi (Select en Number)
 select:
-  - name: "Marstek RS485 Control Mode"
+  - name: "RS485 Control Mode"
     icon: mdi:swap-horizontal
     platform: modbus_controller
     modbus_controller_id: mt
@@ -698,7 +751,7 @@ select:
       "disable": 21947
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek Forcible Charge/Discharge" 
+  - name: "Forcible Charge/Discharge" 
     platform: modbus_controller
     modbus_controller_id: mt
     address: 42010
@@ -709,7 +762,7 @@ select:
       "discharge": 2
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek Backup Function"
+  - name: "Backup Function"
     platform: modbus_controller
     modbus_controller_id: mt
     address: 41200
@@ -719,7 +772,7 @@ select:
       "disable": 1
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek User Work Mode"
+  - name: "User Work Mode"
     icon: mdi:auto-mode
     platform: modbus_controller
     modbus_controller_id: mt
@@ -732,7 +785,7 @@ select:
     skip_updates: 2 # 10 seconds
 
 number:
-  - name: "Marstek Forcible Charge Power"
+  - name: "Forcible Charge Power"
     icon: mdi:tune-variant
     mode: box
     platform: modbus_controller
@@ -746,7 +799,7 @@ number:
     step: 1
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek Charge To SOC"
+  - name: "Charge To SOC"
     icon: mdi:battery-charging-medium 
     mode: box
     platform: modbus_controller
@@ -759,7 +812,7 @@ number:
     max_value: 100
     step: 1
 
-  - name: "Marstek Forcible Discharge Power"
+  - name: "Forcible Discharge Power"
     icon: mdi:tune-variant
     mode: box
     platform: modbus_controller
@@ -773,7 +826,7 @@ number:
     step: 1
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek Charging Cutoff Capacity"
+  - name: "Charging Cutoff Capacity"
     icon: mdi:battery-90
     platform: modbus_controller
     modbus_controller_id: mt
@@ -786,7 +839,7 @@ number:
     multiply: 10
     skip_updates: 6 # 30 seconds
 
-  - name: "Marstek Discharging Cutoff Capacity"
+  - name: "Discharging Cutoff Capacity"
     icon: mdi:battery-10
     platform: modbus_controller
     modbus_controller_id: mt
@@ -799,7 +852,7 @@ number:
     multiply: 10
     skip_updates: 6 # 30 seconds
 
-  - name: "Marstek Max. Charge Power"
+  - name: "Max. Charge Power"
     icon: mdi:tune-variant
     mode: box
     platform: modbus_controller
@@ -813,7 +866,7 @@ number:
     step: 1
     skip_updates: 2 # 10 seconds
 
-  - name: "Marstek Max. Discharge Power"
+  - name: "Max. Discharge Power"
     icon: mdi:tune-variant
     mode: box
     platform: modbus_controller
@@ -830,55 +883,55 @@ number:
 ###############################################################################
 # LED
 ###############################################################################
-light:
-  - platform: neopixelbus
-    type: GRB
-    variant: WS2812
-    pin: 35
-    num_leds: 4
-    name: "Status LED"
-    id: status_led
+#light:
+#  - platform: neopixelbus
+#    type: GRB
+#    variant: WS2812
+#    pin: 35
+#    num_leds: 4
+#    name: "Status LED"
+#    id: status_led
 
-interval:
-  - interval: 5s
-    then:
-      - lambda: |-
-          ESP_LOGD("status", "Modbus: %.0f, WiFi: %.0f", id(modbus_status).state, id(wifi_strength).state);
-      - if:
-          condition:
-            lambda: |-
-              return !isnan(id(modbus_status).state) && id(wifi_strength).state > -70;
-          then:
-            - light.turn_on:
-                id: status_led
-                red: 0%
-                green: 100%  # 🟢 Green = Modbus OK & WiFi strong
-                blue: 0%
-          else:
-            - if:
-                condition:
-                  lambda: |-
-                    return isnan(id(modbus_status).state) && id(wifi_strength).state < -85;
-                then:
-                  - light.turn_on:
-                      id: status_led
-                      red: 100%  # 🟣 Purple = Both Modbus & WiFi failed
-                      green: 0%
-                      blue: 100%
-                else:
-                  - if:
-                      condition:
-                        lambda: |-
-                          return id(wifi_strength).state < -80;
-                      then:
-                        - light.turn_on:
-                            id: status_led
-                            red: 0%
-                            green: 0%
-                            blue: 100%  # 🔵 Blue = Weak WiFi signal (< -80 dBm)
-                      else:
-                        - light.turn_on:
-                            id: status_led
-                            red: 100%  # 🔴 Red = Modbus error, WiFi OK
-                            green: 0%
-                            blue: 0%
+#interval:
+#  - interval: 5s
+#    then:
+#      - lambda: |-
+#          ESP_LOGD("status", "Modbus: %.0f, WiFi: %.0f", id(modbus_status).state, id(wifi_strength).state);
+#      - if:
+#          condition:
+#            lambda: |-
+#              return !isnan(id(modbus_status).state) && id(wifi_strength).state > -70;
+#          then:
+#            - light.turn_on:
+#                id: status_led
+#                red: 0%
+#                green: 100%  # 🟢 Green = Modbus OK & WiFi strong
+#                blue: 0%
+#          else:
+#            - if:
+#                condition:
+#                  lambda: |-
+#                    return isnan(id(modbus_status).state) && id(wifi_strength).state < -85;
+#                then:
+#                  - light.turn_on:
+#                      id: status_led
+#                     red: 100%  # 🟣 Purple = Both Modbus & WiFi failed
+#                      green: 0%
+#                      blue: 100%
+#                else:
+#                  - if:
+#                      condition:
+#                        lambda: |-
+#                          return id(wifi_strength).state < -80;
+#                      then:
+#                        - light.turn_on:
+#                            id: status_led
+#                            red: 0%
+#                            green: 0%
+#                            blue: 100%  # 🔵 Blue = Weak WiFi signal (< -80 dBm)
+#                      else:
+#                        - light.turn_on:
+#                            id: status_led
+#                            red: 100%  # 🔴 Red = Modbus error, WiFi OK
+#                            green: 0%
+#                            blue: 0%
