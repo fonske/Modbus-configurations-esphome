@@ -4,11 +4,24 @@ esphome:
   min_version: 2024.11.0
   name_add_mac_suffix: false
 
+  #Atom S3R
+  platformio_options:
+    board_build.arduino.memory_type: qio_opi
+    build_flags:
+      - "-w" # https://docs.platformio.org/en/latest/projectconf/sections/env/options/build/build_flags.html
+      - "-DBOARD_HAS_PSRAM"
+      - "-DARDUINO_USB_CDC_ON_BOOT=1"
+      - "-mfix-esp32-psram-cache-issue"
+
 esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   framework:
     type: esp-idf
+
+psram:
+  mode: octal
+  speed: 80MHz
 
 # Enable/Disable logging
 logger:
@@ -67,28 +80,41 @@ modbus_controller:
     command_throttle: 200ms
     update_interval: 5s
 
-#G4=IR
+#G47=IR
 remote_transmitter:
   pin: GPIO47 
   carrier_duty_percent: 50%
-
-font:
-  - file: "gfonts://Roboto"
-    id: font_default
-    size: 32
 
 time:
   platform: homeassistant
   id: ha_time
 
 i2c:
-  - id: bus_a
-    sda: 45
-    scl: 0
-    scan: true
-    
+  id: i2c_bus
+  scan: true
+  frequency: 400kHz
+  sda:
+    number: 45
+    ignore_strapping_warning: true
+  scl:
+    number: 0
+    ignore_strapping_warning: true
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ssieb/esphome
+      ref: lp5562
+    components: [ lp5562 ]
+    refresh: 1min
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_default
+    size: 32
+
 lp5562:
-  - i2c_id: bus_a
+  - i2c_id: i2c_bus
 
 output:
   - platform: lp5562
@@ -108,46 +134,31 @@ spi:
   clk_pin: 15
   mosi_pin: 21
 
-display:
-  - platform: st7789v
-    id: disp
-    model: Custom
-    height: 128
-    width: 128
-    rotation: 180
-    offset_height: 2
-    offset_width: 1
-#    backlight_pin: 16
-    cs_pin: 14
-    dc_pin: 42
-    reset_pin: 48
-    eightbitcolor: true
-    update_interval: 1s
-    data_rate: 40Mhz
-    lambda: |-
-      it.strftime(64, 0, id(font_default), TextAlign::TOP_CENTER, "%l:%M %p", id(ha_time).now());
-
-external_components:
-  - source:
-      type: git
-      url: https://github.com/ssieb/esphome
-      ref: lp5562
-    components: [ lp5562 ]
-    refresh: 1min
-
-#output:
-#  - platform: ledc
-#    pin: 16
-#    min_power: 0.65
-#    max_power: 0.99
-#    zero_means_zero: true
-#    id: backlightdim
-
 light:
   - platform: monochromatic
     name: backlight
     output: white
     restore_mode: always_on
+
+display:
+  - id: lcd_display
+    platform: ili9xxx
+    dimensions:
+      height: 128
+      width: 128
+      offset_height: 1
+      offset_width: 2
+    model: st7789v
+    data_rate: 80MHz
+    cs_pin: 14
+    dc_pin: 42
+    reset_pin: 48
+    invert_colors: true
+    transform:
+      mirror_x: true
+      mirror_y: true
+    lambda: |-
+      it.strftime(64, 0, id(font_default), TextAlign::TOP_CENTER, "%l:%M %p", id(ha_time).now());
 
 # Tekstsensoren
 text_sensor:
@@ -909,59 +920,3 @@ number:
     max_value: 2500
     step: 1
     skip_updates: 2 # 10 seconds
-
-###############################################################################
-# LED
-###############################################################################
-#light:
-#  - platform: neopixelbus
-#    type: GRB
-#    variant: WS2812
-#    pin: 35
-#    num_leds: 4
-#    name: "Status LED"
-#    id: status_led
-
-#interval:
-#  - interval: 5s
-#    then:
-#      - lambda: |-
-#          ESP_LOGD("status", "Modbus: %.0f, WiFi: %.0f", id(modbus_status).state, id(wifi_strength).state);
-#      - if:
-#          condition:
-#            lambda: |-
-#              return !isnan(id(modbus_status).state) && id(wifi_strength).state > -70;
-#          then:
-#            - light.turn_on:
-#                id: status_led
-#                red: 0%
-#                green: 100%  # 🟢 Green = Modbus OK & WiFi strong
-#                blue: 0%
-#          else:
-#            - if:
-#                condition:
-#                  lambda: |-
-#                    return isnan(id(modbus_status).state) && id(wifi_strength).state < -85;
-#                then:
-#                  - light.turn_on:
-#                      id: status_led
-#                     red: 100%  # 🟣 Purple = Both Modbus & WiFi failed
-#                      green: 0%
-#                      blue: 100%
-#                else:
-#                  - if:
-#                      condition:
-#                        lambda: |-
-#                          return id(wifi_strength).state < -80;
-#                      then:
-#                        - light.turn_on:
-#                            id: status_led
-#                            red: 0%
-#                            green: 0%
-#                            blue: 100%  # 🔵 Blue = Weak WiFi signal (< -80 dBm)
-#                      else:
-#                        - light.turn_on:
-#                            id: status_led
-#                            red: 100%  # 🔴 Red = Modbus error, WiFi OK
-#                            green: 0%
-#                            blue: 0%
