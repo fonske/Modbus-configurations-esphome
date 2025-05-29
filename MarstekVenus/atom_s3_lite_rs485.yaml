@@ -149,6 +149,7 @@ text_sensor:
         case 3: return std::string("Discharge");
         case 4: return std::string("Fault");
         case 5: return std::string("Idle");
+        case 6: return std::string("AC bypass");
         default: return std::string("Unknown");
       };
     update_interval: 5s
