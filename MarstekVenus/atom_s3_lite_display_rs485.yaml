@@ -1,6 +1,6 @@
 esphome:
   name: marstek_m1
-  friendly_name: MT1
+  friendly_name: My Battery
   min_version: 2024.11.0
   name_add_mac_suffix: false
 
@@ -58,14 +58,14 @@ uart:
 modbus:
   - uart_id: mod_bus
     id: modbus1
-    send_wait_time: 200ms
+    send_wait_time: 30ms
 
 modbus_controller:
   - id: mt
     address: 0x1
     modbus_id: modbus1
-    command_throttle: 200ms
-    update_interval: 5s
+    command_throttle: 30ms
+    update_interval: 2s
 
 #G4=IR
 remote_transmitter:
@@ -103,7 +103,6 @@ display:
     lambda: |-
       it.strftime(64, 0, id(font_default), TextAlign::TOP_CENTER, "%l:%M %p", id(ha_time).now());
 
-
 #output:
 #  - platform: ledc
 #    pin: 16
@@ -118,6 +117,12 @@ display:
 #    restore_mode: RESTORE_DEFAULT_ON
 #    name: "Backlight"
 #   id: backlightlight
+
+###  ESP restart button
+button:
+  - platform: restart
+    id: restart_button
+    name: "ESP Restart"
 
 # Tekstsensoren
 text_sensor:
@@ -149,6 +154,7 @@ text_sensor:
         case 3: return std::string("Discharge");
         case 4: return std::string("Fault");
         case 5: return std::string("Idle");
+        case 6: return std::string("AC bypass");
         default: return std::string("Unknown");
       };
     update_interval: 5s
@@ -157,195 +163,195 @@ text_sensor:
 binary_sensor:
   - platform: modbus_controller
     name: "PLL Abnormal Restart"
+    id: pll_abnormal_restart
     modbus_controller_id: mt
     register_type: holding
     address: 36000
     bitmask: 0x01
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Overtemperature Limit"
+    id: overtemperature_limit
     modbus_controller_id: mt
     register_type: holding
     address: 36000
     bitmask: 0x02
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Low Temperature Limit"
+    id: low_overtemperature_limit
     modbus_controller_id: mt
     register_type: holding
     address: 36000
     bitmask: 0x04
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Fan Abnormal Warning"
+    id: fan_abnormal_warning
     modbus_controller_id: mt
     register_type: holding
     address: 36000
     bitmask: 0x08
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Low Battery SOC Warning"
+    id: low_battery_soc_warning
     modbus_controller_id: mt
     register_type: holding
     address: 36000
-    bitmask: 0x10
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x16
 
   - platform: modbus_controller
     name: "Output Overcurrent Warning"
+    id: output_overcurrent_warning
     modbus_controller_id: mt
     register_type: holding
     address: 36000
-    bitmask: 0x20
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x32
 
   - platform: modbus_controller
     name: "Abnormal Line Sequence Detection"
+    id: abnormal_line_sequence_detection
     modbus_controller_id: mt
     register_type: holding
     address: 36000
-    bitmask: 0x40
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x64
 
   - platform: modbus_controller
     name: "Wifi Abnormal"
+    id: wifi_abnormal
     modbus_controller_id: mt
     register_type: holding
     address: 36001
     bitmask: 0x01
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "BLE abnormal"
+    id: ble_abnormal
     modbus_controller_id: mt
     register_type: holding
     address: 36001
     bitmask: 0x02
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Network abnormal"
+    id: network_abnormal
     modbus_controller_id: mt
     register_type: holding
     address: 36001
     bitmask: 0x04
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "CT connection abnormal"
+    id: ct_connection_abnormal
     modbus_controller_id: mt
     register_type: holding
     address: 36001
     bitmask: 0x08
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Grid overvoltage"
+    id: grid_overvoltage
     modbus_controller_id: mt
     register_type: holding
     address: 36100
     bitmask: 0x01
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Grid undervoltage"
+    id: grid_undervoltage
     modbus_controller_id: mt
     register_type: holding
     address: 36100
     bitmask: 0x02
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Grid overfrequency"
+    id: grid_overfrequency
     modbus_controller_id: mt
     register_type: holding
     address: 36100
     bitmask: 0x04
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Grid underfrequency"
+    id: grid_underfrequency
     modbus_controller_id: mt
     register_type: holding
     address: 36100
     bitmask: 0x08
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "Grid peak voltage abnormal"
+    id: grid_peak_voltage_abnormal
     modbus_controller_id: mt
     register_type: holding
     address: 36100
-    bitmask: 0x10
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x16
 
   - platform: modbus_controller
     name: "Current Dcover"
+    id: current_dcover
     modbus_controller_id: mt
     register_type: holding
     address: 36100
-    bitmask: 0x20
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x32
 
   - platform: modbus_controller
     name: "Voltage Dcover"
+    id: voltage_dcover
     modbus_controller_id: mt
     register_type: holding
     address: 36100
-    bitmask: 0x40
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x64
 
   - platform: modbus_controller
     name: "BAT overvoltage"
+    id: bat_overvoltage
     modbus_controller_id: mt
     register_type: holding
     address: 36101
     bitmask: 0x01
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "BAT undervoltage"
+    id: bat_undervoltage
     modbus_controller_id: mt
     register_type: holding
     address: 36101
     bitmask: 0x02
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "BAT overcurrent"
+    id: bat_overcurrent
     modbus_controller_id: mt
     register_type: holding
     address: 36101
     bitmask: 0x04
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "BAT low SOC"
+    id: bat_low_soc
     modbus_controller_id: mt
     register_type: holding
     address: 36101
     bitmask: 0x08
-    skip_updates: 6 # 30 seconds
 
   - platform: modbus_controller
     name: "BAT communication failure"
+    id: bat_communication_failure
     modbus_controller_id: mt
     register_type: holding
     address: 36101
-    bitmask: 0x10
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x16
 
   - platform: modbus_controller
     name: "BMS protect"
+    id: bms_protect
     modbus_controller_id: mt
     register_type: holding
     address: 36101
-    bitmask: 0x20
-    skip_updates: 6 # 30 seconds
+    bitmask: 0x32
 
   - platform: status
     name: "WiFi Status"
@@ -362,6 +368,7 @@ sensor:
     internal: true # Hides from Home Assistant
 
   - name: "Firmware Version"
+    id: firmware_version
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -370,7 +377,24 @@ sensor:
     accuracy_decimals: 2
     skip_updates: 60 # 5 minutes
 
+#  not working yet
+#  - name: "Battery Voltage (Cell)"
+#    id: battery_voltage_cell
+#    platform: modbus_controller
+#    modbus_controller_id: mt
+#    register_type: holding
+#    address: 32000
+#    value_type: S_WORD
+#    unit_of_measurement: "V"
+#    device_class: voltage
+#    accuracy_decimals: 3
+#    state_class: measurement
+#    filters:
+#      - multiply: 100.0
+#    skip_updates: 4 # 5 minutes
+
   - name: "Battery Voltage (Average)"
+    id: battery_voltage_average
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -383,8 +407,9 @@ sensor:
     filters:
       - multiply: 0.01
     skip_updates: 60 # 5 minutes
-    
+
   - name: "Battery Current (Average)"
+    id: battery_current_average
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -398,6 +423,7 @@ sensor:
       - multiply: 0.01
 
   - name: "Battery Power"
+    id: battery_power
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -410,6 +436,7 @@ sensor:
     skip_updates: 2 # 10 seconds
 
   - name: "Battery State Of Charge"
+    id: battery_state_of_charge
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -417,10 +444,9 @@ sensor:
     value_type: U_WORD
     unit_of_measurement: "%"
     accuracy_decimals: 1
-    id: marstek_soc
-    skip_updates: 60 # 5 minutes
 
   - name: "Battery Total Energy"
+    id: battery_total_energy  
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -430,7 +456,6 @@ sensor:
     accuracy_decimals: 2
     filters:
       - multiply: 0.001 # Firmware 148: 0.001 / Firmware 147: 0.01
-    id: marstek_total_energy
     skip_updates: 60 # 5 minutes
 
   - platform: template
@@ -439,14 +464,15 @@ sensor:
     accuracy_decimals: 2
     update_interval: 300s
     lambda: |-
-      if (id(marstek_total_energy).has_state() && id(marstek_soc).has_state()) {
-        float total_energy = id(marstek_total_energy).state;
-        float soc = id(marstek_soc).state / 100.0;
+      if (id(battery_total_energy).has_state() && id(battery_state_of_charge).has_state()) {
+        float total_energy = id(battery_total_energy).state;
+        float soc = id(battery_state_of_charge).state / 100.0;
         return roundf(total_energy * soc * 100) / 100; // Ensures two decimal places
       }
       return NAN;
 
   - name: "AC Voltage"
+    id: ac_voltage
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -458,9 +484,9 @@ sensor:
     accuracy_decimals: 1
     filters:
       - multiply: 0.1
-    skip_updates: 60 # 5 minutes
-
+ 
   - name: "AC Current"
+    id: ac_current
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -474,6 +500,7 @@ sensor:
       - multiply: 0.01
 
   - name: "AC Power"
+    id: ac_power
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -486,6 +513,7 @@ sensor:
     skip_updates: 2 # 10 seconds
 
 #  - name: "AC Offgrid Voltage"
+#    id: ac_offgrid_voltage
 #    platform: modbus_controller
 #    modbus_controller_id: mt
 #    register_type: holding
@@ -496,9 +524,9 @@ sensor:
 #    accuracy_decimals: 1
 #    filters:
 #      - multiply: 0.1
-#    skip_updates: 60 # 5 minutes
 
 #  - name: "AC Offgrid Current"
+#    id: ac_offgrid_current
 #    platform: modbus_controller
 #    modbus_controller_id: mt
 #    register_type: holding
@@ -511,6 +539,7 @@ sensor:
 #      - multiply: 0.01
 
 #  - name: "AC Offgrid Power"
+#    id: ac_offgrid_power
 #    platform: modbus_controller
 #    modbus_controller_id: mt
 #    register_type: holding
@@ -522,6 +551,7 @@ sensor:
 #    accuracy_decimals: 0
 
   - name: "Total Charging Energy"
+    id: total_charging_energy
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -534,9 +564,9 @@ sensor:
     filters:
       - multiply: 0.01
     register_count: 2
-    skip_updates: 60 # 5 minutes
 
   - name: "Total Discharging Energy"
+    id: total_discharging_energy
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -549,9 +579,9 @@ sensor:
     filters:
       - multiply: 0.01
     register_count: 2
-    skip_updates: 60 # 5 minutes
 
   - name: "Daily Charging Energy"
+    id: daily_charging_energy
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -564,9 +594,9 @@ sensor:
     filters:
       - multiply: 0.01
     register_count: 2
-    skip_updates: 60 # 5 minutes
 
   - name: "Daily Discharging Energy"
+    id: daily_discharging_energy
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -579,9 +609,10 @@ sensor:
     filters:
       - multiply: 0.01
     register_count: 2
-    skip_updates: 60 # 5 minutes
 
-  - name: "Monthly Charging Energy"
+# Slow Sensor
+  - name: "Monthly Charging Energy"   
+    id: monthly_charging_energy
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -596,7 +627,9 @@ sensor:
     register_count: 2
     skip_updates: 60 # 5 minutes
 
+# Slow Sensor
   - name: "Monthly Discharging Energy"
+    id: monthly_discharging_energy
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -695,6 +728,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+# Slow Sensor 
   - name: "Battery Charge Current Limit"
     platform: modbus_controller
     modbus_controller_id: mt
@@ -709,6 +743,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+# Slow Sensor 
   - name: "Battery Discharge Current Limit"
     platform: modbus_controller
     modbus_controller_id: mt
