@@ -1,3 +1,4 @@
+# based on Atom S3 display with RS485 Base - 5V shortcut wire soldered on back PCB from +5V to +24V
 esphome:
   name: marstek_m1
   friendly_name: My Battery
@@ -510,7 +511,7 @@ sensor:
     device_class: power
     state_class: measurement
     accuracy_decimals: 0
-    skip_updates: 2 # 10 seconds
+#    skip_updates: 2 # 10 seconds
 
 #  - name: "AC Offgrid Voltage"
 #    id: ac_offgrid_voltage
@@ -914,59 +915,3 @@ number:
     max_value: 2500
     step: 1
     skip_updates: 2 # 10 seconds
-
-###############################################################################
-# LED
-###############################################################################
-#light:
-#  - platform: neopixelbus
-#    type: GRB
-#    variant: WS2812
-#    pin: 35
-#    num_leds: 4
-#    name: "Status LED"
-#    id: status_led
-
-#interval:
-#  - interval: 5s
-#    then:
-#      - lambda: |-
-#          ESP_LOGD("status", "Modbus: %.0f, WiFi: %.0f", id(modbus_status).state, id(wifi_strength).state);
-#      - if:
-#          condition:
-#            lambda: |-
-#              return !isnan(id(modbus_status).state) && id(wifi_strength).state > -70;
-#          then:
-#            - light.turn_on:
-#                id: status_led
-#                red: 0%
-#                green: 100%  # 🟢 Green = Modbus OK & WiFi strong
-#                blue: 0%
-#          else:
-#            - if:
-#                condition:
-#                  lambda: |-
-#                    return isnan(id(modbus_status).state) && id(wifi_strength).state < -85;
-#                then:
-#                  - light.turn_on:
-#                      id: status_led
-#                     red: 100%  # 🟣 Purple = Both Modbus & WiFi failed
-#                      green: 0%
-#                      blue: 100%
-#                else:
-#                  - if:
-#                      condition:
-#                        lambda: |-
-#                          return id(wifi_strength).state < -80;
-#                      then:
-#                        - light.turn_on:
-#                            id: status_led
-#                            red: 0%
-#                            green: 0%
-#                            blue: 100%  # 🔵 Blue = Weak WiFi signal (< -80 dBm)
-#                      else:
-#                        - light.turn_on:
-#                            id: status_led
-#                            red: 100%  # 🔴 Red = Modbus error, WiFi OK
-#                            green: 0%
-#                            blue: 0%
