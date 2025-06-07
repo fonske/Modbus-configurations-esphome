@@ -1,3 +1,4 @@
+# based on Atom S3 lite with RS485 Base - 5V shortcut wire soldered on back PCB from +5V to +24V
 esphome:
   name: marstek_m1
   friendly_name: MT1
@@ -419,7 +420,7 @@ sensor:
     unit_of_measurement: "%"
     accuracy_decimals: 1
     id: marstek_soc
-    skip_updates: 60 # 5 minutes
+#    skip_updates: 60 # 5 minutes
 
   - name: "Battery Total Energy"
     platform: modbus_controller
@@ -484,7 +485,7 @@ sensor:
     device_class: power
     state_class: measurement
     accuracy_decimals: 0
-    skip_updates: 2 # 10 seconds
+#    skip_updates: 2 # 10 seconds
 
 #  - name: "AC Offgrid Voltage"
 #    platform: modbus_controller
