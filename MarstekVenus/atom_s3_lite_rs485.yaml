@@ -485,7 +485,7 @@ sensor:
     device_class: power
     state_class: measurement
     accuracy_decimals: 0
-#    skip_updates: 2 # 10 seconds
+    skip_updates: 1 # 10 seconds
 
 #  - name: "AC Offgrid Voltage"
 #    platform: modbus_controller
