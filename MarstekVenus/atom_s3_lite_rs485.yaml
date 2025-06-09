@@ -69,7 +69,7 @@ web_server:
 #  active: true
 
 #ble_client:
-#  - mac_address: "24:19:72:0d:2a:2f"  #find your Marstek bluetooth mac addres first!
+#  - mac_address: "XX:XX:XX:XX:XX:XX"  #find your Marstek bluetooth mac addres first!
 #    id: marstek_mt1_ble
 
 #switch:  # to keep the bluetooth connected, so no other can connect to your marstek
