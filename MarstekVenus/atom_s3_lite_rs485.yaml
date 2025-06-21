@@ -1,11 +1,15 @@
-esphome:
+substitutions:
   name: marstek_m1
   friendly_name: MT1
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
   min_version: 2024.11.0
   name_add_mac_suffix: false
 
 esp32:
-  board: esp32-s3-devkitc-1
+  board: esp32-s3-devkitc-1 #Atom S3 light
   variant: esp32s3
   framework:
     type: esp-idf
@@ -49,7 +53,7 @@ wifi:
 
 ## Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "MT1 Hotspot"
+    ssid: "${friendly_name} Hotspot"
     password: "configesp"
     ap_timeout: 15s
 
@@ -271,6 +275,7 @@ binary_sensor:
 
   - platform: modbus_controller
     name: "CT connection abnormal"
+    icon: mdi:robot-vacuum-alert
     id: ct_connection_abnormal
     modbus_controller_id: mt
     register_type: holding
@@ -315,6 +320,7 @@ binary_sensor:
 
   - platform: modbus_controller
     name: "Grid peak voltage abnormal"
+    icon: mdi:alert-plus
     id: grid_peak_voltage_abnormal
     modbus_controller_id: mt
     register_type: holding
@@ -452,6 +458,7 @@ sensor:
       
   - platform: modbus_controller
     id: inverter_state  # No name, since it's internal
+    icon: mdi:state-machine
     modbus_controller_id: mt
     register_type: holding
     address: 35100
@@ -460,6 +467,7 @@ sensor:
 
   - name: "Firmware Version"
     id: firmware_version
+    icon: mdi:factory
     platform: modbus_controller
     modbus_controller_id: mt
     register_type: holding
@@ -958,11 +966,12 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: mt
     name: "Modbus Status"
+    icon: mdi:help-rhombus-outline
     id: modbus_status
     register_type: holding
     address: 32104  # Using the Battery SOC register as a reference
     value_type: U_WORD
-    internal: true
+    internal: true # Hides from Home Assistant
     web_server:
       sorting_group_id: Diagnostic
       sorting_weight: 3
@@ -1154,7 +1163,9 @@ number:
 light:
   - platform: esp32_rmt_led_strip
     id: status_led
-    internal: true
+    name: Status led
+    icon: mdi:lightbulb
+    internal: true # Hides from Home Assistant
     rgb_order: GRB
     pin: 35
     num_leds: 4
