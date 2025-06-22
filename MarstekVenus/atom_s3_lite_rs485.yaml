@@ -41,8 +41,6 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  #ssid: "Myda 5 GHz"
-  #password: "vlev9adn"
   reboot_timeout: 0s
 
 ## uncomment if you need a fixed ip address
