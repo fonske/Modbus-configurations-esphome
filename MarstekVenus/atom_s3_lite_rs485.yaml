@@ -151,7 +151,7 @@ text_sensor:
     skip_updates: 60 # 5 minutes
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 6
+      sorting_weight: 7
 
   # - name: "SN Code"
   #   platform: modbus_controller
@@ -180,6 +180,20 @@ text_sensor:
     web_server:
       sorting_group_id: Info
       sorting_weight: 4
+
+  - platform: wifi_info
+    ip_address:
+      name: Esp ip
+      icon: mdi:ip
+      web_server:
+        sorting_group_id: Diagnostic
+        sorting_weight: 3
+    ssid:
+      name: Esp sidd
+      icon: mdi:wifi
+      web_server:
+        sorting_group_id: Diagnostic
+        sorting_weight: 2
 
 # Binaire sensoren
 binary_sensor:
@@ -439,7 +453,7 @@ binary_sensor:
         - script.stop: adjust_brightness_loop
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 7
+      sorting_weight: 10
 
 ## Sensoren
 sensor:
@@ -450,7 +464,7 @@ sensor:
     entity_category: diagnostic
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 4
+      sorting_weight: 9
 
 ## NCIR thermometer sensor M5stack U028
 #  - platform: mlx90614
@@ -468,6 +482,9 @@ sensor:
     address: 35100
     value_type: U_WORD
     internal: true # Hides from Home Assistant
+    web_server:
+      sorting_group_id: Info
+      sorting_weight: 30
 
   - name: "Firmware Version"
     id: firmware_version
@@ -481,7 +498,7 @@ sensor:
     skip_updates: 60 # 5 minutes
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 6
+      sorting_weight: 8
 
   - name: "Battery Voltage (Average)"
     id: battery_voltage_average
@@ -964,7 +981,21 @@ sensor:
     entity_category: diagnostic
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 2
+      sorting_weight: 5
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_strength
+    name: Wifi signal
+    id: wifi_signal_proc
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: " %"
+    entity_category: diagnostic
+    device_class: ""
+    icon: mdi:wifi
+    web_server:
+      sorting_group_id: Diagnostic
+      sorting_weight: 4
 
   # An internal sensor to check Modbus communication status.
   - platform: modbus_controller
@@ -978,7 +1009,7 @@ sensor:
     internal: true # Hides from Home Assistant
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 5
+      sorting_weight: 6
 
 # Instellingen en modi (Select en Number)
 select:
@@ -1191,7 +1222,7 @@ light:
           max_brightness: 100%
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 3
+      sorting_weight: 11
 
 # 🟢 Green on => wifi connected- api connected/ Green blinking => wifi connected - api disconnected
 # 🟣 Purple => wifi disconnected
