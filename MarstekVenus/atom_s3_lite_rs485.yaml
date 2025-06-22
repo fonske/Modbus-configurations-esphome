@@ -418,6 +418,7 @@ binary_sensor:
       mode: INPUT_PULLUP
     name: "Brightness Button"
     id: brightness_button
+    internal: true
     icon: mdi:brightness-6
     on_multi_click:
       - timing:
@@ -436,6 +437,9 @@ binary_sensor:
     on_release:
       then:
         - script.stop: adjust_brightness_loop
+    web_server:
+      sorting_group_id: Diagnostic
+      sorting_weight: 7
 
 ## Sensoren
 sensor:
@@ -966,7 +970,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: mt
     name: "Modbus Status"
-    icon: mdi:help-rhombus-outline
+    icon: mdi:transit-connection
     id: modbus_status
     register_type: holding
     address: 32104  # Using the Battery SOC register as a reference
@@ -974,7 +978,7 @@ sensor:
     internal: true # Hides from Home Assistant
     web_server:
       sorting_group_id: Diagnostic
-      sorting_weight: 3
+      sorting_weight: 5
 
 # Instellingen en modi (Select en Number)
 select:
@@ -1185,6 +1189,9 @@ light:
           update_interval: 100ms
           min_brightness: 25%
           max_brightness: 100%
+    web_server:
+      sorting_group_id: Diagnostic
+      sorting_weight: 3
 
 # 🟢 Green on => wifi connected- api connected/ Green blinking => wifi connected - api disconnected
 # 🟣 Purple => wifi disconnected
